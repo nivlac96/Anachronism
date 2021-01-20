@@ -288,7 +288,7 @@ public class CharacterController2D : MonoBehaviour
 
     private void TryToLaunchGrapple()
     {
-		if (m_isGrappling) { return; }
+		if (m_isGrappling || m_Grounded) { return; }
 
 		// loop through anchor points and see if any satisfy the distance constraints. If any are
 		// found, attach the grapple to the closest one.
