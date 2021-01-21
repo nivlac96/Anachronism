@@ -9,9 +9,13 @@ public class PlayerMovement : MonoBehaviour {
 
 	public float runSpeed = 40f;
 
+	public bool moveCharacter;
+
 	float horizontalMove = 0f;
 	bool jump = false;
 	bool dash = false;
+	bool launchGrapple = false;
+	bool releaseGrapple = false;
 
 	//bool dashAxis = false;
 	
@@ -22,7 +26,7 @@ public class PlayerMovement : MonoBehaviour {
 
 		animator.SetFloat("Speed", Mathf.Abs(horizontalMove));
 
-		if (Input.GetKeyDown(KeyCode.Z))
+		if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.UpArrow))
 		{
 			jump = true;
 		}
@@ -30,6 +34,16 @@ public class PlayerMovement : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.C))
 		{
 			dash = true;
+		}
+
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			launchGrapple = true;
+		}
+
+		if (Input.GetKeyUp(KeyCode.Space))
+		{
+			releaseGrapple = true;
 		}
 
 		/*if (Input.GetAxisRaw("Dash") == 1 || Input.GetAxisRaw("Dash") == -1) //RT in Unity 2017 = -1, RT in Unity 2019 = 1
@@ -50,19 +64,21 @@ public class PlayerMovement : MonoBehaviour {
 
 	public void OnFall()
 	{
-		animator.SetBool("IsJumping", true);
-	}
+        animator.SetBool("IsJumping", true);
+    }
 
-	public void OnLanding()
+    public void OnLanding()
 	{
-		animator.SetBool("IsJumping", false);
-	}
+        animator.SetBool("IsJumping", false);
+    }
 
-	void FixedUpdate ()
+    void FixedUpdate ()
 	{
 		// Move our character
-		controller.Move(horizontalMove * Time.fixedDeltaTime, jump, dash);
-		jump = false;
+		controller.Move(horizontalMove * Time.fixedDeltaTime, jump, dash, launchGrapple, releaseGrapple);
+        jump = false;
 		dash = false;
+		launchGrapple = false;
+		releaseGrapple = false;
 	}
 }

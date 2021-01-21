@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System;
 
 public class CharacterController2D : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class CharacterController2D : MonoBehaviour
 
 	const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
 	private bool m_Grounded;            // Whether or not the player is grounded.
-	private Rigidbody2D m_Rigidbody2D;
+	private Rigidbody2D rigidbody2DRef;
 	private bool m_FacingRight = true;  // For determining which way the player is currently facing.
 	private Vector3 velocity = Vector3.zero;
 	private float limitFallSpeed = 25f; // Limit fall speed
@@ -23,7 +24,7 @@ public class CharacterController2D : MonoBehaviour
 	[SerializeField] private float m_DashForce = 25f;
 	private bool canDash = true;
 	private bool isDashing = false; //If player is dashing
-	private bool m_IsWall = false; //If there is a wall in front of the player
+	private bool isWall = false; //If there is a wall in front of the player
 	private bool isWallSliding = false; //If player is sliding in a wall
 	private bool oldWallSlidding = false; //If player is sliding in a wall in the previous frame
 	private float prevVelocityX = 0f;
@@ -41,20 +42,44 @@ public class CharacterController2D : MonoBehaviour
 	private float jumpWallDistX = 0; //Distance between player and wall
 	private bool limitVelOnWallJump = false; //For limit wall jump distance with low fps
 
+	[Header("Grapple Controls")]
+	[Space]
+
+	// The minimum Y distance a grapple point must be above for you to attach to it 
+	[SerializeField] private float minHeightToGrapple = 5.0f;
+	// The minimum Y distance a grapple point can be above for you to be able to attach to it 
+	[SerializeField] private float maxHeightToGrapple = 15.0f;
+	// The maximum X distance an anchor point can be from you to grapple
+	[SerializeField] private float maxXToGrapple = 5.0f;
+	private SpringJoint2D m_grappleSpringJoint = null;
+	private bool m_isGrappling = false;
+	private GrappleRope m_grappleRope = null;
+	private Rigidbody2D[] allAnchorPoints;
+	private Rigidbody2D m_currentGrappleAnchor;
+
 	[Header("Events")]
 	[Space]
 
 	public UnityEvent OnFallEvent;
 	public UnityEvent OnLandEvent;
 
+
 	[System.Serializable]
 	public class BoolEvent : UnityEvent<bool> { }
 
 	private void Awake()
 	{
-		m_Rigidbody2D = GetComponent<Rigidbody2D>();
+		rigidbody2DRef = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
-
+		m_grappleSpringJoint = GetComponent<SpringJoint2D>();
+		m_grappleRope = GetComponentInChildren<GrappleRope>();
+		
+		var anchorPointObjs = GameObject.FindGameObjectsWithTag("Grappleable");
+		allAnchorPoints = new Rigidbody2D[anchorPointObjs.Length];
+		for (int i = 0; i < anchorPointObjs.Length; i++)
+        {
+			allAnchorPoints[i] = anchorPointObjs[i].GetComponent<Rigidbody2D>();
+        }
 		if (OnFallEvent == null)
 			OnFallEvent = new UnityEvent();
 
@@ -78,15 +103,15 @@ public class CharacterController2D : MonoBehaviour
 				if (!wasGrounded )
 				{
 					OnLandEvent.Invoke();
-					if (!m_IsWall && !isDashing) 
+					if (!isWall && !isDashing) 
 						particleJumpDown.Play();
 					canDoubleJump = true;
-					if (m_Rigidbody2D.velocity.y < 0f)
+					if (rigidbody2DRef.velocity.y < 0f)
 						limitVelOnWallJump = false;
 				}
 		}
 
-		m_IsWall = false;
+		isWall = false;
 
 		if (!m_Grounded)
 		{
@@ -97,15 +122,15 @@ public class CharacterController2D : MonoBehaviour
 				if (collidersWall[i].gameObject != null)
 				{
 					isDashing = false;
-					m_IsWall = true;
+					isWall = true;
 				}
 			}
-			prevVelocityX = m_Rigidbody2D.velocity.x;
+			prevVelocityX = rigidbody2DRef.velocity.x;
 		}
 
 		if (limitVelOnWallJump)
 		{
-			if (m_Rigidbody2D.velocity.y < -0.5f)
+			if (rigidbody2DRef.velocity.y < -0.5f)
 				limitVelOnWallJump = false;
 			jumpWallDistX = (jumpWallStartX - transform.position.x) * transform.localScale.x;
 			if (jumpWallDistX < -0.5f && jumpWallDistX > -1f) 
@@ -115,25 +140,37 @@ public class CharacterController2D : MonoBehaviour
 			else if (jumpWallDistX < -1f && jumpWallDistX >= -2f) 
 			{
 				canMove = true;
-				m_Rigidbody2D.velocity = new Vector2(10f * transform.localScale.x, m_Rigidbody2D.velocity.y);
+				rigidbody2DRef.velocity = new Vector2(10f * transform.localScale.x, rigidbody2DRef.velocity.y);
 			}
 			else if (jumpWallDistX < -2f) 
 			{
 				limitVelOnWallJump = false;
-				m_Rigidbody2D.velocity = new Vector2(0, m_Rigidbody2D.velocity.y);
+				rigidbody2DRef.velocity = new Vector2(0, rigidbody2DRef.velocity.y);
 			}
 			else if (jumpWallDistX > 0) 
 			{
 				limitVelOnWallJump = false;
-				m_Rigidbody2D.velocity = new Vector2(0, m_Rigidbody2D.velocity.y);
+				rigidbody2DRef.velocity = new Vector2(0, rigidbody2DRef.velocity.y);
 			}
 		}
 	}
 
 
-	public void Move(float move, bool jump, bool dash)
+	public void Move(float move, bool jump, bool dash, bool launchGrapple, bool releaseGrapple)
 	{
 		if (canMove) {
+			if (launchGrapple)
+            {
+				TryToLaunchGrapple();
+            }
+			if (releaseGrapple)
+            {
+				TryToReleaseGrapple();
+            }
+			if (m_isGrappling)
+            {
+				return;
+            }
 			if (dash && canDash && !isWallSliding)
 			{
 				//m_Rigidbody2D.AddForce(new Vector2(transform.localScale.x * m_DashForce, 0f));
@@ -142,17 +179,17 @@ public class CharacterController2D : MonoBehaviour
 			// If crouching, check to see if the character can stand up
 			if (isDashing)
 			{
-				m_Rigidbody2D.velocity = new Vector2(transform.localScale.x * m_DashForce, 0);
+				rigidbody2DRef.velocity = new Vector2(transform.localScale.x * m_DashForce, 0);
 			}
 			//only control the player if grounded or airControl is turned on
 			else if (m_Grounded || m_AirControl)
 			{
-				if (m_Rigidbody2D.velocity.y < -limitFallSpeed)
-					m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, -limitFallSpeed);
+				if (rigidbody2DRef.velocity.y < -limitFallSpeed)
+					rigidbody2DRef.velocity = new Vector2(rigidbody2DRef.velocity.x, -limitFallSpeed);
 				// Move the character by finding the target velocity
-				Vector3 targetVelocity = new Vector2(move * 10f, m_Rigidbody2D.velocity.y);
+				Vector3 targetVelocity = new Vector2(move * 10f, rigidbody2DRef.velocity.y);
 				// And then smoothing it out and applying it to the character
-				m_Rigidbody2D.velocity = Vector3.SmoothDamp(m_Rigidbody2D.velocity, targetVelocity, ref velocity, m_MovementSmoothing);
+				rigidbody2DRef.velocity = Vector3.SmoothDamp(rigidbody2DRef.velocity, targetVelocity, ref velocity, m_MovementSmoothing);
 
 				// If the input is moving the player right and the player is facing left...
 				if (move > 0 && !m_FacingRight && !isWallSliding)
@@ -174,7 +211,7 @@ public class CharacterController2D : MonoBehaviour
 				animator.SetBool("IsJumping", true);
 				animator.SetBool("JumpUp", true);
 				m_Grounded = false;
-				m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
+				rigidbody2DRef.AddForce(new Vector2(0f, m_JumpForce));
 				canDoubleJump = true;
 				particleJumpDown.Play();
 				particleJumpUp.Play();
@@ -182,14 +219,14 @@ public class CharacterController2D : MonoBehaviour
 			else if (!m_Grounded && jump && canDoubleJump && !isWallSliding)
 			{
 				canDoubleJump = false;
-				m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, 0);
-				m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce / 1.2f));
+				rigidbody2DRef.velocity = new Vector2(rigidbody2DRef.velocity.x, 0);
+				rigidbody2DRef.AddForce(new Vector2(0f, m_JumpForce / 1.2f));
 				animator.SetBool("IsDoubleJumping", true);
 			}
 
-			else if (m_IsWall && !m_Grounded)
+			else if (isWall && !m_Grounded)
 			{
-				if (!oldWallSlidding && m_Rigidbody2D.velocity.y < 0 || isDashing)
+				if (!oldWallSlidding && rigidbody2DRef.velocity.y < 0 || isDashing)
 				{
 					isWallSliding = true;
 					m_WallCheck.localPosition = new Vector3(-m_WallCheck.localPosition.x, m_WallCheck.localPosition.y, 0);
@@ -209,7 +246,7 @@ public class CharacterController2D : MonoBehaviour
 					else 
 					{
 						oldWallSlidding = true;
-						m_Rigidbody2D.velocity = new Vector2(-transform.localScale.x * 2, -5);
+						rigidbody2DRef.velocity = new Vector2(-transform.localScale.x * 2, -5);
 					}
 				}
 
@@ -217,8 +254,8 @@ public class CharacterController2D : MonoBehaviour
 				{
 					animator.SetBool("IsJumping", true);
 					animator.SetBool("JumpUp", true); 
-					m_Rigidbody2D.velocity = new Vector2(0f, 0f);
-					m_Rigidbody2D.AddForce(new Vector2(transform.localScale.x * m_JumpForce *1.2f, m_JumpForce));
+					rigidbody2DRef.velocity = new Vector2(0f, 0f);
+					rigidbody2DRef.AddForce(new Vector2(transform.localScale.x * m_JumpForce *1.2f, m_JumpForce));
 					jumpWallStartX = transform.position.x;
 					limitVelOnWallJump = true;
 					canDoubleJump = true;
@@ -238,7 +275,7 @@ public class CharacterController2D : MonoBehaviour
 					StartCoroutine(DashCooldown());
 				}
 			}
-			else if (isWallSliding && !m_IsWall && canCheck) 
+			else if (isWallSliding && !isWall && canCheck) 
 			{
 				isWallSliding = false;
 				animator.SetBool("IsWallSliding", false);
@@ -249,8 +286,70 @@ public class CharacterController2D : MonoBehaviour
 		}
 	}
 
+    private void TryToLaunchGrapple()
+    {
+		if (m_isGrappling || m_Grounded) { return; }
 
-	private void Flip()
+		// loop through anchor points and see if any satisfy the distance constraints. If any are
+		// found, attach the grapple to the closest one.
+		float closest = Mathf.Infinity;
+		float yDiff, distance;
+		Vector2 currAnchorPt;
+		Rigidbody2D closestAnchorPt = null;
+		bool anchorPointWasFound = false;
+		for (int i = 0; i < allAnchorPoints.Length; i++)
+        {
+			currAnchorPt = allAnchorPoints[i].transform.position;
+			// check x distance
+			if (Mathf.Abs(currAnchorPt.x - transform.position.x) <= maxXToGrapple)
+            {
+				// check y distance
+				yDiff = Mathf.Abs(currAnchorPt.y - transform.position.y);
+				if (yDiff >= minHeightToGrapple && yDiff <= maxHeightToGrapple)
+                {
+					// check total distance
+					distance = Vector2.Distance(transform.position, currAnchorPt);
+					if (distance < closest)
+                    {
+						closest = distance;
+						closestAnchorPt = allAnchorPoints[i];
+						anchorPointWasFound = true;
+                    }
+                }
+            }
+
+        }
+		if (anchorPointWasFound)
+		{
+			m_currentGrappleAnchor = closestAnchorPt;
+			m_isGrappling = true;
+
+			// Initialize the grapple joint, setting the closest anchor point as its connected body
+			m_grappleSpringJoint.enabled = true;
+			m_grappleSpringJoint.connectedBody = m_currentGrappleAnchor;
+			m_grappleSpringJoint.distance = closest;
+			
+			// Draw the grapple rope
+			m_grappleRope.StartDrawingRope(m_grappleSpringJoint.connectedBody.transform.position);
+		}
+	}
+
+	private void TryToReleaseGrapple()
+    {
+		if (!m_isGrappling) { return; }
+
+		m_currentGrappleAnchor = null;
+		m_isGrappling = false;
+
+		m_grappleSpringJoint.connectedBody = null;
+		m_grappleSpringJoint.enabled = false;
+		
+		canDoubleJump = true;
+
+		m_grappleRope.HideRope();
+	}
+
+    private void Flip()
 	{
 		// Switch the way the player is labelled as facing.
 		m_FacingRight = !m_FacingRight;
@@ -268,8 +367,8 @@ public class CharacterController2D : MonoBehaviour
 			animator.SetBool("Hit", true);
 			life -= damage;
 			Vector2 damageDir = Vector3.Normalize(transform.position - position) * 40f ;
-			m_Rigidbody2D.velocity = Vector2.zero;
-			m_Rigidbody2D.AddForce(damageDir * 10);
+			rigidbody2DRef.velocity = Vector2.zero;
+			rigidbody2DRef.AddForce(damageDir * 10);
 			if (life <= 0)
 			{
 				StartCoroutine(WaitToDead());
@@ -336,7 +435,7 @@ public class CharacterController2D : MonoBehaviour
 		invincible = true;
 		GetComponent<Attack>().enabled = false;
 		yield return new WaitForSeconds(0.4f);
-		m_Rigidbody2D.velocity = new Vector2(0, m_Rigidbody2D.velocity.y);
+		rigidbody2DRef.velocity = new Vector2(0, rigidbody2DRef.velocity.y);
 		yield return new WaitForSeconds(1.1f);
 		SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
 	}
