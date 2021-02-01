@@ -29,10 +29,14 @@ public class GrappleRope : MonoBehaviour
     {
         isEngaged = true;
         anchorPoint = _anchorPoint;
+        int playerSortOrder = GetComponentInParent<SpriteRenderer>().sortingOrder;
+        int playerLayer = GetComponentInParent<SpriteRenderer>().sortingLayerID;
 
         for (int i = 0; i < numberOfPoints; i++)
         {
             pointsArray[i].gameObject.SetActive(true);
+            pointsArray[i].GetComponent<SpriteRenderer>().sortingOrder = playerSortOrder;
+            pointsArray[i].GetComponent<SpriteRenderer>().sortingLayerID = playerLayer;
         }
     }
 
