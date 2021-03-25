@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 13b75c95f34a00d4e8c04f76b73312e6, type: 3}
-  m_Name: WaterFall
+  m_Name: WaterFallAnim
   m_EditorClassIdentifier: 
   m_AnimatedSprites:
   - {fileID: 167037294558086049, guid: efb0b9151ef44b143990a0a47b6b42f2, type: 3}
