@@ -9635,9 +9635,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5540306459977397734}
+  - component: {fileID: 5577169497784575424}
   - component: {fileID: 5577222153686459982}
   - component: {fileID: 5576898106099079640}
-  - component: {fileID: 5577169497784575424}
   - component: {fileID: 5622516581890213570}
   - component: {fileID: 5595557417363646720}
   - component: {fileID: 5496594682944004636}
@@ -9671,6 +9671,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5577169497784575424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5546030763390189164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8644d33345e77614ba3ace9c18398d0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 5577222153686459982}
+  animator: {fileID: 5595557417363646720}
+  runSpeedBase: 30
+  runSpeedStandard: 60
+  speedRampUpPerSec: 15
+  speedDecayPerSec: 5
+  resetSpeedAfter: 0.2
 --- !u!114 &5577222153686459982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9683,7 +9702,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 783f8b7882d2d2a42a5b76de9179978f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_JumpForce: 850
+  m_JumpForce: 1100
   m_MovementSmoothing: 0.05
   m_AirControl: 1
   m_WhatIsGround:
@@ -9694,12 +9713,12 @@ MonoBehaviour:
   canDoubleJump: 0
   m_DashForce: 25
   life: 10
-  invincible: 0
+  invincible: 1
   particleJumpUp: {fileID: 5634586889525300700}
   particleJumpDown: {fileID: 5634370951412449142}
   minHeightToGrapple: 1
-  maxHeightToGrapple: 20
-  maxXToGrapple: 20
+  maxHeightToGrapple: 10
+  maxXToGrapple: 10
   OnFallEvent:
     m_PersistentCalls:
       m_Calls:
@@ -9748,22 +9767,6 @@ MonoBehaviour:
   canAttack: 1
   isTimeToCheck: 0
   cam: {fileID: 0}
---- !u!114 &5577169497784575424
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5546030763390189164}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8644d33345e77614ba3ace9c18398d0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  controller: {fileID: 5577222153686459982}
-  animator: {fileID: 5595557417363646720}
-  runSpeed: 40
-  moveCharacter: 1
 --- !u!212 &5622516581890213570
 SpriteRenderer:
   m_ObjectHideFlags: 0
