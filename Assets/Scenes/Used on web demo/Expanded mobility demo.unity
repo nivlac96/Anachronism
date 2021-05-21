@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -978,6 +978,11 @@ PrefabInstance:
         type: 3}
       propertyPath: resetSpeedAfter
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5577222153686459982, guid: 73b981b719a33c64d811d6aca2fa5483,
+        type: 3}
+      propertyPath: minHeightToGrapple
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 5622516581890213570, guid: 73b981b719a33c64d811d6aca2fa5483,
         type: 3}

@@ -6,9 +6,9 @@ public class PlayerMovement : MonoBehaviour {
 
 	public CharacterController2D controller;
 	public Animator animator;
-	private Rigidbody2D rigidbody;
+    private Rigidbody2D rigidbody;
 
-	[Tooltip("The starting speed when you move from standing still")]
+    [Tooltip("The starting speed when you move from standing still")]
 	public float runSpeedBase = 30f;
 	[Tooltip("The max speed from running. If you gain extra speed from maneuvers, you will decrease back to this plateau if all you do is run.")]
 	public float runSpeedStandard = 40f;
@@ -32,7 +32,7 @@ public class PlayerMovement : MonoBehaviour {
     private void Awake()
     {
 		currentRunSpeed = runSpeedBase;
-		rigidbody = GetComponent<Rigidbody2D>();
+        rigidbody = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame

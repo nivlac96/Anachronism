@@ -9689,7 +9689,7 @@ MonoBehaviour:
   runSpeedStandard: 60
   speedRampUpPerSec: 15
   speedDecayPerSec: 5
-  resetSpeedAfter: 0.2
+  resetSpeedAfter: 0.5
 --- !u!114 &5577222153686459982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9716,9 +9716,11 @@ MonoBehaviour:
   invincible: 1
   particleJumpUp: {fileID: 5634586889525300700}
   particleJumpDown: {fileID: 5634370951412449142}
-  minHeightToGrapple: 1
+  minHeightToGrapple: -1
   maxHeightToGrapple: 10
   maxXToGrapple: 10
+  releaseGrappleOnLand: 1
+  releaseGrappleOnWall: 1
   OnFallEvent:
     m_PersistentCalls:
       m_Calls:

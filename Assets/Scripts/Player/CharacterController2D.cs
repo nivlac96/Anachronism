@@ -45,12 +45,17 @@ public class CharacterController2D : MonoBehaviour
 	[Header("Grapple Controls")]
 	[Space]
 
-	// The minimum Y distance a grapple point must be above for you to attach to it 
+	[Tooltip("The minimum Y distance a grapple point must be above for you to attach to it")]
 	[SerializeField] private float minHeightToGrapple = 5.0f;
-	// The minimum Y distance a grapple point can be above for you to be able to attach to it 
+	[Tooltip("The minimum Y distance a grapple point can be above for you to be able to attach to it ")]
 	[SerializeField] private float maxHeightToGrapple = 15.0f;
-	// The maximum X distance an anchor point can be from you to grapple
+	[Tooltip("The maximum X distance an anchor point can be from you to grapple")]
 	[SerializeField] private float maxXToGrapple = 5.0f;
+	[Tooltip("Should the grapple automatically be released when the player touches ground?")]
+	[SerializeField] private bool releaseGrappleOnLand = true;
+	[Tooltip("Should the grapple automatically be released when the player swings into a wall?")]
+	[SerializeField] private bool releaseGrappleOnWall = true;
+
 	private SpringJoint2D m_grappleSpringJoint = null;
 	private bool m_isGrappling = false;
 	private GrappleRope m_grappleRope = null;
@@ -108,6 +113,8 @@ public class CharacterController2D : MonoBehaviour
 					canDoubleJump = true;
 					if (rigidbody2DRef.velocity.y < 0f)
 						limitVelOnWallJump = false;
+					if (releaseGrappleOnLand)
+						TryToReleaseGrapple();
 				}
 		}
 
@@ -123,6 +130,8 @@ public class CharacterController2D : MonoBehaviour
 				{
 					isDashing = false;
 					isWall = true;
+					if (releaseGrappleOnWall)
+						TryToReleaseGrapple();
 				}
 			}
 			prevVelocityX = rigidbody2DRef.velocity.x;
@@ -307,7 +316,7 @@ public class CharacterController2D : MonoBehaviour
 				yDiff = Mathf.Abs(currAnchorPt.y - transform.position.y);
 				if (yDiff >= minHeightToGrapple && yDiff <= maxHeightToGrapple)
                 {
-					// check total distance
+					// check total distance against closest
 					distance = Vector2.Distance(transform.position, currAnchorPt);
 					if (distance < closest)
                     {
