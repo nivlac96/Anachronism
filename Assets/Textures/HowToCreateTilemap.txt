@@ -1,0 +1,24 @@
+How to create a useable tile set from a sprite sheet png
+
+1) Drag the png into this folder (Assets/Textures)
+2) In Unity, select the sprite in the Project view.
+3) Change settings in the inspector:
+	a) Texture Type: Sprite (2D and UI)
+	b) Sprite Mode: Multiple
+	c) Pixels per unit: 16
+	d) Compression: none
+4) In the inspector, click "open sprite editor"
+5) slice the tilemap in the sprite inspector:
+	a) In the top left, click "Slice"
+	b) In the dropdown, set "Type" to "Grid by cell size"
+	c) In the dropdown, set pixel size to 16 x 16
+	d) Click "Slice"
+	e) close the sprite editor
+6) in the inspector, click "apply"
+7) to check if everything is done, in the project view, click the arrow next to thr tilemap sprite. It should expand to show all the individual sprites.
+8) The spritesheet is loaded, now we must turn it into a tileset. Open the Tile Palette window if it is not open already, from Window->2D->Tile Palette in the top left of the unity editor.
+9) In the tile palette, click the text in the top left just below where it says "Active Tilemap", a dropdown should appear. Select "Create New Palette".
+10) In the popup, select the folder "Assets/Tilemaps/Palettes"
+11) Drag your spritesheet from the project view in Assets/Textures onto the empty grid in the Tile Palette. Let it do it's thing. If it opens a file browser again, select the same folder as last time "Assets/Tilemaps/Palettes"
+
+Once the process is done, you should be able to paint into the scene usiong your new tiles. Don't forget to save the new assets in git.
