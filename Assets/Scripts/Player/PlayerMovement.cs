@@ -52,19 +52,19 @@ public class PlayerMovement : MonoBehaviour {
 		}
 
 		//if (Input.GetKeyDown(KeyCode.C))
-		if (Input.GetButtonDown("Fire2"))
+		if (Input.GetButtonDown("Dash"))
 		{
 			dash = true;
 		}
 
 		//if (Input.GetKeyDown(KeyCode.Space))
-		if (Input.GetButtonDown("Fire1"))
+		if (Input.GetButtonDown("Grapple"))
 		{
 			launchGrapple = true;
 		}
 
 		//if (Input.GetKeyUp(KeyCode.Space))
-		if (Input.GetButtonUp("Fire1"))
+		if (Input.GetButtonUp("Grapple"))
 		{
 			releaseGrapple = true;
 		}
