@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class PlayerMovement : MonoBehaviour {
 
 	public CharacterController2D controller;
@@ -44,22 +45,26 @@ public class PlayerMovement : MonoBehaviour {
 
 		animator.SetFloat("Speed", Mathf.Abs(horizontalMove));
 
-		if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+		//if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+		if (Input.GetButtonDown("Jump"))
 		{
 			jump = true;
 		}
 
-		if (Input.GetKeyDown(KeyCode.C))
+		//if (Input.GetKeyDown(KeyCode.C))
+		if (Input.GetButtonDown("Dash"))
 		{
 			dash = true;
 		}
 
-		if (Input.GetKeyDown(KeyCode.Space))
+		//if (Input.GetKeyDown(KeyCode.Space))
+		if (Input.GetButtonDown("Grapple"))
 		{
 			launchGrapple = true;
 		}
 
-		if (Input.GetKeyUp(KeyCode.Space))
+		//if (Input.GetKeyUp(KeyCode.Space))
+		if (Input.GetButtonUp("Grapple"))
 		{
 			releaseGrapple = true;
 		}
