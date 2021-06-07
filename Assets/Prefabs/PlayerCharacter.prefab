@@ -9644,6 +9644,7 @@ GameObject:
   - component: {fileID: 5479103977661495080}
   - component: {fileID: 5608742553412544356}
   - component: {fileID: 5544935063680374627}
+  - component: {fileID: 565276210}
   m_Layer: 1
   m_Name: PlayerCharacter
   m_TagString: Player
@@ -9991,6 +9992,57 @@ SpringJoint2D:
   m_Distance: 5
   m_DampingRatio: 1
   m_Frequency: 5.38
+--- !u!114 &565276210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5546030763390189164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: 99fb1e7bca3a66d4f868bd596ca128a3,
+    type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: cd4d7539-23bc-491f-8feb-34269885a486
+    m_ActionName: Player/Jump[/Keyboard/upArrow,/XInputControllerWindows/buttonSouth]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 46b0533e-2ac4-4024-84af-bea3f345cbb3
+    m_ActionName: Player/Grapple[/Keyboard/space,/XInputControllerWindows/rightShoulder]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: f4fcaf0c-a621-4af9-8a0a-ad7c4443f112
+    m_ActionName: Player/Dash[/Keyboard/c,/XInputControllerWindows/leftShoulder]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 64af61f1-aade-4235-883e-378ab00d36ed
+    m_ActionName: Player/Move[/Keyboard/leftArrow,/Keyboard/rightArrow,/XInputControllerWindows/leftStick/left,/XInputControllerWindows/leftStick/right]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: eb6444fc-4dca-4012-a5aa-66e433969227
+    m_ActionName: Meta/New action
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Player
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &5546074451197265178
 GameObject:
   m_ObjectHideFlags: 0

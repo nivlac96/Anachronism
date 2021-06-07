@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour {
 
@@ -24,75 +24,67 @@ public class PlayerMovement : MonoBehaviour {
 	private float speedResetTimer = 0;
 
 	float horizontalMove = 0f;
+	float horizontalRaw = 0f;
 	bool jump = false;
 	bool dash = false;
 	bool launchGrapple = false;
 	bool releaseGrapple = false;
+
 
     //bool dashAxis = false;
     private void Awake()
     {
 		currentRunSpeed = runSpeedBase;
         rigidbody = GetComponent<Rigidbody2D>();
-    }
 
-    // Update is called once per frame
-    void Update () {
-
-		DetermineCurrentRunSpeed();
-
-        horizontalMove = Input.GetAxisRaw("Horizontal") * currentRunSpeed;
-
-		animator.SetFloat("Speed", Mathf.Abs(horizontalMove));
-
-		//if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
-		if (Input.GetButtonDown("Jump"))
-		{
-			jump = true;
-		}
-
-		//if (Input.GetKeyDown(KeyCode.C))
-		if (Input.GetButtonDown("Dash"))
-		{
-			dash = true;
-		}
-
-		//if (Input.GetKeyDown(KeyCode.Space))
-		if (Input.GetButtonDown("Grapple"))
-		{
-			launchGrapple = true;
-		}
-
-		//if (Input.GetKeyUp(KeyCode.Space))
-		if (Input.GetButtonUp("Grapple"))
-		{
-			releaseGrapple = true;
-		}
-
-		/*if (Input.GetAxisRaw("Dash") == 1 || Input.GetAxisRaw("Dash") == -1) //RT in Unity 2017 = -1, RT in Unity 2019 = 1
-		{
-			if (dashAxis == false)
-			{
-				dashAxis = true;
-				dash = true;
-			}
-		}
-		else
-		{
-			dashAxis = false;
-		}
-		*/
+		// Most input handlers are triggered by SendMessage, but this was the best way I could find to handle a "button release" event.
+		InputAction grappleInput = GetComponent<PlayerInput>().currentActionMap["Grapple"];
+		grappleInput.canceled += OnReleaseGrapple;
 
 	}
+
+    // Update is called once per frame
+    void Update () 
+	{
+		DetermineCurrentRunSpeed();
+    }
+
+    // These Input handlers are triggered by the SendMessage system of PlayerInput when the player presses a button.
+	public void OnMove(InputValue input)
+    {
+		horizontalRaw = input.Get<float>();
+	}
+
+    public void OnJump()
+    {
+		jump = true;
+	}
+
+	public void OnDash()
+    {
+		dash = true;
+    }
+
+	public void OnGrapple()
+    {
+		launchGrapple = true;
+    }
+
+	// This Input handler is not called by the SendMessage system like the others
+	// See how it is initialized in Awake()
+	public void OnReleaseGrapple(InputAction.CallbackContext c)
+    {
+		releaseGrapple = true;
+    }
 
 	public void DetermineCurrentRunSpeed()
     {
 		// Rigidbody speed from slopes, swings, etc. can boost running speed
 		currentRunSpeed = Mathf.Max(rigidbody.velocity.magnitude, currentRunSpeed);
-		print(rigidbody.velocity.magnitude);
+		//print(rigidbody.velocity.magnitude);
 
 		// Return to base speed if player holds still for a moment
-		if (Input.GetAxisRaw("Horizontal") == 0 && currentRunSpeed >= runSpeedBase)
+		if (horizontalRaw == 0 && currentRunSpeed >= runSpeedBase)
 		{
 			speedResetTimer += Time.deltaTime;
 			if(speedResetTimer > resetSpeedAfter)
@@ -114,6 +106,8 @@ public class PlayerMovement : MonoBehaviour {
 				currentRunSpeed = Mathf.Min(runSpeedStandard, currentRunSpeed + speedRampUpPerSec * Time.deltaTime);
 			}
 		}
+		horizontalMove = horizontalRaw * currentRunSpeed;
+		animator.SetFloat("Speed", Mathf.Abs(horizontalMove));
 
 	}
 
