@@ -52,9 +52,12 @@ public class GrappleRope : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        for (int i = 0; i < numberOfPoints; i++)
+        if (isEngaged)
         {
-            pointsArray[i].transform.position = Vector2.Lerp(transform.position, anchorPoint, (i * 1.0f / numberOfPoints));
+            for (int i = 0; i < numberOfPoints; i++)
+            {
+                pointsArray[i].transform.position = Vector2.Lerp(transform.position, anchorPoint, (i * 1.0f / numberOfPoints));
+            }
         }
     }
 }

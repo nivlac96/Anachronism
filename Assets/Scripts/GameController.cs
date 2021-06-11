@@ -18,7 +18,7 @@ public class GameController : MonoBehaviour
     void Update()
     {
         // Reset the level when 'R' is pressed
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetButtonDown("RestartLevel"))
         {
             UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
         }
