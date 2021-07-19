@@ -9684,13 +9684,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8644d33345e77614ba3ace9c18398d0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 5577222153686459982}
-  animator: {fileID: 5595557417363646720}
-  runSpeedBase: 30
-  runSpeedStandard: 60
-  speedRampUpPerSec: 15
-  speedDecayPerSec: 5
-  resetSpeedAfter: 0.5
+  Controller: {fileID: 5577222153686459982}
+  Animator: {fileID: 5595557417363646720}
+  RunSpeedBase: 30
+  RunSpeedStandard: 40
+  SpeedRampUpPerSec: 7
+  SpeedDecayPerSec: 5
+  ResetSpeedAfter: 0.2
 --- !u!114 &5577222153686459982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9703,25 +9703,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 783f8b7882d2d2a42a5b76de9179978f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_JumpForce: 1100
-  m_MovementSmoothing: 0.05
-  m_AirControl: 1
-  m_WhatIsGround:
+  JumpForce: 1000
+  MovementSmoothing: 0.05
+  AirControl: 1
+  WhatIsGround:
     serializedVersion: 2
-    m_Bits: 53
-  m_GroundCheck: {fileID: 5547500440380388068}
-  m_WallCheck: {fileID: 5540032294619291992}
-  canDoubleJump: 0
-  m_DashForce: 25
-  life: 10
-  invincible: 1
-  particleJumpUp: {fileID: 5634586889525300700}
-  particleJumpDown: {fileID: 5634370951412449142}
-  minHeightToGrapple: -1
-  maxHeightToGrapple: 10
-  maxXToGrapple: 10
-  releaseGrappleOnLand: 1
-  releaseGrappleOnWall: 1
+    m_Bits: 1
+  GroundCheck: {fileID: 5547500440380388068}
+  WallCheck: {fileID: 5540032294619291992}
+  DashForce: 25
+  MinHeightToGrapple: 0
+  MaxHeightToGrapple: 15
+  MaxXToGrapple: 15
+  ReleaseGrappleOnLand: 1
+  ReleaseGrappleOnWall: 1
   OnFallEvent:
     m_PersistentCalls:
       m_Calls:
@@ -9750,6 +9745,11 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  CanDoubleJump: 1
+  HitPoints: 10
+  Invincible: 0
+  ParticleJumpUp: {fileID: 5634586889525300700}
+  ParticleJumpDown: {fileID: 5634370951412449142}
 --- !u!114 &5576898106099079640
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9757,7 +9757,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5546030763390189164}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d9955788a5eaffa49a9297f38eaa6202, type: 3}
   m_Name: 

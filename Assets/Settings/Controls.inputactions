@@ -36,6 +36,14 @@
                     "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "Slide",
+                    "type": "Button",
+                    "id": "60f3a761-1dee-4817-9db0-1f5d4bf847a4",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -43,7 +51,7 @@
                     "name": "",
                     "id": "0387ea6c-e7ea-47e6-a5e2-c845f7c2fbdd",
                     "path": "<Keyboard>/upArrow",
-                    "interactions": "",
+                    "interactions": "Hold(pressPoint=0.5)",
                     "processors": "",
                     "groups": "",
                     "action": "Jump",
@@ -170,6 +178,28 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "ec9ce250-97ab-4142-a385-5f3a22ff2951",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Slide",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d5232474-00d3-4560-a43b-60c756358d85",
+                    "path": "<XInputController>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Slide",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -178,9 +208,9 @@
             "id": "14f67c7c-b7fb-4d31-a58f-70fb7a85d2b3",
             "actions": [
                 {
-                    "name": "New action",
+                    "name": "RestartLevel",
                     "type": "Button",
-                    "id": "eb6444fc-4dca-4012-a5aa-66e433969227",
+                    "id": "3a5464cb-d093-469c-9cf8-5e6e2f4f42df",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -189,12 +219,23 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "7bba9187-6679-47fb-8873-92d8c3287610",
-                    "path": "",
+                    "id": "5d219605-dc50-4531-989b-0d622f5235fa",
+                    "path": "<Keyboard>/r",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "New action",
+                    "action": "RestartLevel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1d72587f-ebac-4dec-8dfd-c92e0f64e1dc",
+                    "path": "<XInputController>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RestartLevel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

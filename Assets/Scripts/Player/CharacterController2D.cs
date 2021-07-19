@@ -6,43 +6,17 @@ using System;
 
 public class CharacterController2D : MonoBehaviour
 {
-	[SerializeField] private float JumpForce = 400f;							// Amount of force added when the player jumps.
+    #region Public members
+
+    [SerializeField] private float JumpForce = 400f;							// Amount of force added when the player jumps.
 	[Range(0, .3f)] [SerializeField] private float MovementSmoothing = .05f;	// How much to smooth out the movement
 	[SerializeField] private bool AirControl = false;							// Whether or not a player can steer while jumping;
 	[SerializeField] private LayerMask WhatIsGround;							// A mask determining what is ground to the character
 	[SerializeField] private Transform GroundCheck;							// A position marking where to check if the player is grounded.
 	[SerializeField] private Transform WallCheck;								//Posicion que controla si el personaje toca una pared
+    [SerializeField] private float DashForce = 25f;
 
-	const float GROUNDED_RADIUS = .2f; // Radius of the overlap circle to determine if grounded
-	private bool _grounded;            // Whether or not the player is grounded.
-	private Rigidbody2D _rigidbody2DRef;
-	private bool _facingRight = true;  // For determining which way the player is currently facing.
-	private Vector3 _velocity = Vector3.zero;
-	private float _limitFallSpeed = 25f; // Limit fall speed
-
-	public bool CanDoubleJump = true; //If player can double jump
-	[SerializeField] private float DashForce = 25f;
-	private bool _canDash = true;
-	private bool _isDashing = false; //If player is dashing
-	private bool _isWallInFrontOfPlayer = false; //If there is a wall in front of the player
-	private bool _isWallSliding = false; //If player is sliding in a wall
-	private bool _oldWallSlidding = false; //If player is sliding in a wall in the previous frame
-	private float _prevVelocityX = 0f;
-	private bool _canCheckIfWallSliding = false; //For check if player is wallsliding
-
-	public float HitPoints = 10f; //Life of the player
-	public bool Invincible = false; //If player can die
-	private bool _canMove = true; //If player can move
-
-	private Animator _animator;
-	public ParticleSystem ParticleJumpUp; //Trail particles
-	public ParticleSystem ParticleJumpDown; //Explosion particles
-
-	private float _jumpWallStartX = 0;
-	private float _jumpWallDistX = 0; //Distance between player and wall
-	private bool _limitVelOnWallJump = false; //For limit wall jump distance with low fps
-
-	[Header("Grapple Controls")]
+    [Header("Grapple Controls")]
 	[Space]
 
 	[Tooltip("The minimum Y distance a grapple point must be above for you to attach to it")]
@@ -68,8 +42,41 @@ public class CharacterController2D : MonoBehaviour
 	public UnityEvent OnFallEvent;
 	public UnityEvent OnLandEvent;
 
+    #endregion
+    #region Private Members
 
-	[System.Serializable]
+    const float GROUNDED_RADIUS = .2f; // Radius of the overlap circle to determine if grounded
+    private bool _grounded;            // Whether or not the player is grounded.
+    private Rigidbody2D _rigidbody2DRef;
+    private bool _facingRight = true;  // For determining which way the player is currently facing.
+    private Vector3 _velocity = Vector3.zero;
+    private float _limitFallSpeed = 25f; // Limit fall speed
+
+    public bool CanDoubleJump = true; //If player can double jump
+    
+    private bool _canDash = true;
+    private bool _isDashing = false; //If player is dashing
+    private bool _isWallInFrontOfPlayer = false; //If there is a wall in front of the player
+    private bool _isWallSliding = false; //If player is sliding in a wall
+    private bool _oldWallSlidding = false; //If player is sliding in a wall in the previous frame
+    private float _prevVelocityX = 0f;
+    private bool _canCheckIfWallSliding = false; //For check if player is wallsliding
+
+    public float HitPoints = 10f; //Life of the player
+    public bool Invincible = false; //If player can die
+    private bool _canMove = true; //If player can move
+
+    private Animator _animator;
+    public ParticleSystem ParticleJumpUp; //Trail particles
+    public ParticleSystem ParticleJumpDown; //Explosion particles
+
+    private float _jumpWallStartX = 0;
+    private float _jumpWallDistX = 0; //Distance between player and wall
+    private bool _limitVelOnWallJump = false; //For limit wall jump distance with low fps
+
+    #endregion
+
+    [System.Serializable]
 	public class BoolEvent : UnityEvent<bool> { }
 
 	private void Awake()
@@ -216,22 +223,12 @@ public class CharacterController2D : MonoBehaviour
 			// If the player should jump...
 			if (_grounded && jump)
 			{
-				// Add a vertical force to the player.
-				_animator.SetBool("IsJumping", true);
-				_animator.SetBool("JumpUp", true);
-				_grounded = false;
-				_rigidbody2DRef.AddForce(new Vector2(0f, JumpForce));
-				CanDoubleJump = true;
-				ParticleJumpDown.Play();
-				ParticleJumpUp.Play();
-			}
+                JumpFromGround();  // Add a vertical force to the player.
+            }
 			// Double jump
-			else if (!_grounded && jump && CanDoubleJump && !_isWallSliding)
+			else if (!_grounded && jump && !_isWallSliding)
 			{
-				CanDoubleJump = false;
-				_rigidbody2DRef.velocity = new Vector2(_rigidbody2DRef.velocity.x, 0);
-				_rigidbody2DRef.AddForce(new Vector2(0f, JumpForce / 1.2f));
-				_animator.SetBool("IsDoubleJumping", true);
+                MidAirJumpHandler();
 			}
 
 			else if (_isWallInFrontOfPlayer && !_grounded)
@@ -344,7 +341,29 @@ public class CharacterController2D : MonoBehaviour
 		}
 	}
 
-	private void TryToReleaseGrapple()
+    private void JumpFromGround()
+    {
+        _animator.SetBool("IsJumping", true);
+        _animator.SetBool("JumpUp", true);
+        _grounded = false;
+        _rigidbody2DRef.AddForce(new Vector2(0f, JumpForce));
+        CanDoubleJump = true;
+        ParticleJumpDown.Play();
+        ParticleJumpUp.Play();
+    }
+
+    private void MidAirJumpHandler()
+    {
+        if (CanDoubleJump)
+        {
+            CanDoubleJump = false;
+            _rigidbody2DRef.velocity = new Vector2(_rigidbody2DRef.velocity.x, 0);
+            _rigidbody2DRef.AddForce(new Vector2(0f, JumpForce / 1.2f));
+            _animator.SetBool("IsDoubleJumping", true);
+        }
+    }
+
+    private void TryToReleaseGrapple()
     {
 		if (!_isGrappling) { return; }
 
