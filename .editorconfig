@@ -174,9 +174,17 @@ dotnet_naming_rule.non_field_members_should_be_pascal_case.severity = warning
 dotnet_naming_rule.non_field_members_should_be_pascal_case.symbols = non_field_members
 dotnet_naming_rule.non_field_members_should_be_pascal_case.style = pascal_case
 
-dotnet_naming_rule.private_or_internal_field_should_be_begins_with___and_lowercase.severity = warning
-dotnet_naming_rule.private_or_internal_field_should_be_begins_with___and_lowercase.symbols = private_or_internal_field
-dotnet_naming_rule.private_or_internal_field_should_be_begins_with___and_lowercase.style = begins_with___and_lowercase
+dotnet_naming_rule.const_should_be_upper_under.severity = warning
+dotnet_naming_rule.const_should_be_upper_under.symbols = const
+dotnet_naming_rule.const_should_be_upper_under.style = upper_under
+
+dotnet_naming_rule.private_or_internal_field_should_be__begins_with___and_lowercase.severity = warning
+dotnet_naming_rule.private_or_internal_field_should_be__begins_with___and_lowercase.symbols = private_or_internal_field
+dotnet_naming_rule.private_or_internal_field_should_be__begins_with___and_lowercase.style = _begins_with___and_lowercase
+
+dotnet_naming_rule.local_should_be_all_lower.severity = warning
+dotnet_naming_rule.local_should_be_all_lower.symbols = local
+dotnet_naming_rule.local_should_be_all_lower.style = all_lower
 
 # Symbol specifications
 
@@ -196,6 +204,14 @@ dotnet_naming_symbols.non_field_members.applicable_kinds = property, event, meth
 dotnet_naming_symbols.non_field_members.applicable_accessibilities = public, internal, private, protected, protected_internal
 dotnet_naming_symbols.non_field_members.required_modifiers = 
 
+dotnet_naming_symbols.const.applicable_kinds = namespace, property, field, event, parameter, local, class, struct, interface, enum, delegate, method, local_function
+dotnet_naming_symbols.const.applicable_accessibilities = *
+dotnet_naming_symbols.const.required_modifiers = const
+
+dotnet_naming_symbols.local.applicable_kinds = local
+dotnet_naming_symbols.local.applicable_accessibilities = local
+dotnet_naming_symbols.local.required_modifiers = 
+
 # Naming styles
 
 dotnet_naming_style.pascal_case.required_prefix = 
@@ -208,7 +224,17 @@ dotnet_naming_style.begins_with_i.required_suffix =
 dotnet_naming_style.begins_with_i.word_separator = 
 dotnet_naming_style.begins_with_i.capitalization = pascal_case
 
-dotnet_naming_style.begins_with___and_lowercase.required_prefix = _
-dotnet_naming_style.begins_with___and_lowercase.required_suffix = 
-dotnet_naming_style.begins_with___and_lowercase.word_separator = 
-dotnet_naming_style.begins_with___and_lowercase.capitalization = camel_case
+dotnet_naming_style._begins_with___and_lowercase.required_prefix = _
+dotnet_naming_style._begins_with___and_lowercase.required_suffix = 
+dotnet_naming_style._begins_with___and_lowercase.word_separator = 
+dotnet_naming_style._begins_with___and_lowercase.capitalization = camel_case
+
+dotnet_naming_style.upper_under.required_prefix = 
+dotnet_naming_style.upper_under.required_suffix = 
+dotnet_naming_style.upper_under.word_separator = _
+dotnet_naming_style.upper_under.capitalization = all_upper
+
+dotnet_naming_style.all_lower.required_prefix = 
+dotnet_naming_style.all_lower.required_suffix = 
+dotnet_naming_style.all_lower.word_separator = 
+dotnet_naming_style.all_lower.capitalization = camel_case
