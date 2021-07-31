@@ -14,17 +14,21 @@ public class PlayerMovement : MonoBehaviour {
 	public float SpeedRampUpPerSec = 7f;
 	[Tooltip("How many units the speed decreases by per second while running faster than standard")]
 	public float SpeedDecayPerSec = 5f;
-	[Tooltip("How much time in seconds can a player hold still for before their speed resets to Base.")]
+    [Tooltip("How quickly the character can switch directions")]
+    public float TurnAroundSpeedPerSec = 70f;
+    [Tooltip("How much time in seconds can a player hold still for before their speed resets to Base.")]
 	public float ResetSpeedAfter = 0.2f;
     [Tooltip("The amount of time the jump button must be held before capping out jump height")]
     public float TimeToFullJump = 0.3f;
 
+
 	private Rigidbody2D _rigidbodyRef;
-	private float _currentRunSpeed;
+	private float _currentAllowedRunSpeed;
 	private float _speedResetTimer = 0;
 	private float _horizontalRaw = 0f;
 	private float _horizontalMove = 0f;
-	private bool _jumpIsHeld = false;
+    private float _lastDirection = 0f;
+    private bool _jumpIsHeld = false;
 	private bool _dash = false;
 	private bool _launchGrapple = false;
 	private bool _releaseGrapple = false;
@@ -36,7 +40,7 @@ public class PlayerMovement : MonoBehaviour {
     //bool dashAxis = false;
     private void Awake()
     {
-		_currentRunSpeed = RunSpeedBase;
+		_currentAllowedRunSpeed = RunSpeedBase;
         _rigidbodyRef = GetComponent<Rigidbody2D>();
 
 		// Most input handlers are triggered by SendMessage, but this was the best way I could find to handle a "button release" event.
@@ -108,34 +112,48 @@ public class PlayerMovement : MonoBehaviour {
 
 	public void DetermineCurrentRunSpeed()
     {
-		// Rigidbody speed from slopes, swings, etc. can boost running speed
-		_currentRunSpeed = Mathf.Max(_rigidbodyRef.velocity.magnitude, _currentRunSpeed);
-		//print(rigidbody.velocity.magnitude);
+        // Rigidbody speed from slopes, swings, etc. can boost running speed
+        float actualMovementSpeed = _rigidbodyRef.velocity.magnitude;
+        _currentAllowedRunSpeed = Mathf.Max(actualMovementSpeed, _currentAllowedRunSpeed);
+        //print(rigidbody.velocity.magnitude);
 
-		// Return to base speed if player holds still for a moment
-		if (_horizontalRaw == 0 && _currentRunSpeed >= RunSpeedBase)
+        // If player is not giving directional input
+		if (_horizontalRaw == 0)
 		{
-			_speedResetTimer += Time.deltaTime;
-			if(_speedResetTimer > ResetSpeedAfter)
+            if (Mathf.Abs(_horizontalMove) > RunSpeedBase)
             {
-				_currentRunSpeed = RunSpeedBase;
-			}
+                _currentAllowedRunSpeed = Mathf.Max(RunSpeedBase, _currentAllowedRunSpeed - SpeedDecayPerSec * Time.deltaTime);
+                _horizontalMove = _lastDirection * _currentAllowedRunSpeed;
+            }
+            else
+            {
+                _horizontalMove = 0;
+            }
 		}
+
+        // If player indicates they want to go in a direction they are not going
+        else if (_horizontalMove != 0 && Mathf.Sign(_horizontalRaw) != Mathf.Sign(_horizontalMove))
+        {
+            Debug.Log("Switch: move: " + _horizontalMove + " raw: " + _horizontalRaw);
+            _horizontalMove = _horizontalMove + (_horizontalRaw * TurnAroundSpeedPerSec * Time.deltaTime);
+        }
+
 		else
         {
 			_speedResetTimer = 0;
 			// Decay speed if player is going above the standard
-			if (_currentRunSpeed > RunSpeedStandard)
+			if (_currentAllowedRunSpeed > RunSpeedStandard)
 			{
-				_currentRunSpeed = Mathf.Max(RunSpeedStandard, _currentRunSpeed - SpeedDecayPerSec * Time.deltaTime);
+				_currentAllowedRunSpeed = Mathf.Max(RunSpeedStandard, _currentAllowedRunSpeed - SpeedDecayPerSec * Time.deltaTime);
 			}
 			// Ramp up speed if the player is moving slower than standard
-			else if (_currentRunSpeed < RunSpeedStandard)
+			else if (_currentAllowedRunSpeed < RunSpeedStandard)
 			{
-				_currentRunSpeed = Mathf.Min(RunSpeedStandard, _currentRunSpeed + SpeedRampUpPerSec * Time.deltaTime);
+				_currentAllowedRunSpeed = Mathf.Min(RunSpeedStandard, _currentAllowedRunSpeed + SpeedRampUpPerSec * Time.deltaTime);
 			}
-		}
-		_horizontalMove = _horizontalRaw * _currentRunSpeed;
+            _horizontalMove = _horizontalRaw * _currentAllowedRunSpeed;
+            _lastDirection = Mathf.Sign(_horizontalRaw);
+        }
 		Animator.SetFloat("Speed", Mathf.Abs(_horizontalMove));
 
 	}
