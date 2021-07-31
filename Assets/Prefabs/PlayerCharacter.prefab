@@ -9643,8 +9643,8 @@ GameObject:
   - component: {fileID: 5496594682944004636}
   - component: {fileID: 5479103977661495080}
   - component: {fileID: 5608742553412544356}
-  - component: {fileID: 5544935063680374627}
   - component: {fileID: 565276210}
+  - component: {fileID: 977830561}
   m_Layer: 1
   m_Name: PlayerCharacter
   m_TagString: Player
@@ -9690,6 +9690,7 @@ MonoBehaviour:
   RunSpeedStandard: 100
   SpeedRampUpPerSec: 40
   SpeedDecayPerSec: 40
+  TurnAroundSpeedPerSec: 150
   ResetSpeedAfter: 0.2
   TimeToFullJump: 0.3
 --- !u!114 &5577222153686459982
@@ -9718,6 +9719,7 @@ MonoBehaviour:
   MinHeightToGrapple: 0
   MaxHeightToGrapple: 15
   MaxXToGrapple: 15
+  GrappleRopeMinLength: 5
   ReleaseGrappleOnLand: 1
   ReleaseGrappleOnWall: 1
   OnFallEvent:
@@ -9975,26 +9977,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!231 &5544935063680374627
-SpringJoint2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5546030763390189164}
-  m_Enabled: 0
-  serializedVersion: 4
-  m_EnableCollision: 0
-  m_ConnectedRigidBody: {fileID: 0}
-  m_BreakForce: Infinity
-  m_BreakTorque: Infinity
-  m_AutoConfigureConnectedAnchor: 0
-  m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0, y: 0}
-  m_AutoConfigureDistance: 0
-  m_Distance: 5
-  m_DampingRatio: 1
-  m_Frequency: 5.38
 --- !u!114 &565276210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10046,6 +10028,25 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!232 &977830561
+DistanceJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5546030763390189164}
+  m_Enabled: 0
+  serializedVersion: 4
+  m_EnableCollision: 0
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_AutoConfigureConnectedAnchor: 0
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0, y: 0}
+  m_AutoConfigureDistance: 1
+  m_Distance: 66.14074
+  m_MaxDistanceOnly: 1
 --- !u!1 &5546074451197265178
 GameObject:
   m_ObjectHideFlags: 0

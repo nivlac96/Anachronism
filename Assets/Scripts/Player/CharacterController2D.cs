@@ -28,12 +28,14 @@ public class CharacterController2D : MonoBehaviour
 	[SerializeField] private float MaxHeightToGrapple = 15.0f;
 	[Tooltip("The maximum X distance an anchor point can be from you to grapple")]
 	[SerializeField] private float MaxXToGrapple = 5.0f;
-	[Tooltip("Should the grapple automatically be released when the player touches ground?")]
+    [Tooltip("The shortest the grapple rope can be by default.")]
+    [SerializeField] private float GrappleRopeMinLength = 7.0f;
+    [Tooltip("Should the grapple automatically be released when the player touches ground?")]
 	[SerializeField] private bool ReleaseGrappleOnLand = true;
 	[Tooltip("Should the grapple automatically be released when the player swings into a wall?")]
 	[SerializeField] private bool ReleaseGrappleOnWall = true;
 
-	private SpringJoint2D _grappleSpringJoint = null;
+	private DistanceJoint2D _grappleDistanceJoint = null;
 	private bool _isGrappling = false;
 	private GrappleRope _grappleRope = null;
 	private Rigidbody2D[] _allAnchorPoints;
@@ -89,7 +91,7 @@ public class CharacterController2D : MonoBehaviour
 	{
 		_rigidbody2DRef = GetComponent<Rigidbody2D>();
 		_animator = GetComponent<Animator>();
-		_grappleSpringJoint = GetComponent<SpringJoint2D>();
+		_grappleDistanceJoint = GetComponent<DistanceJoint2D>();
 		_grappleRope = GetComponentInChildren<GrappleRope>();
 		
 		var anchorPointObjs = GameObject.FindGameObjectsWithTag("Grappleable");
@@ -331,12 +333,12 @@ public class CharacterController2D : MonoBehaviour
 			_isGrappling = true;
 
 			// Initialize the grapple joint, setting the closest anchor point as its connected body
-			_grappleSpringJoint.enabled = true;
-			_grappleSpringJoint.connectedBody = _currentGrappleAnchor;
-			_grappleSpringJoint.distance = closest;
+			_grappleDistanceJoint.enabled = true;
+			_grappleDistanceJoint.connectedBody = _currentGrappleAnchor;
+			_grappleDistanceJoint.distance = Math.Max(closest, GrappleRopeMinLength);
 			
 			// Draw the grapple rope
-			_grappleRope.StartDrawingRope(_grappleSpringJoint.connectedBody.transform.position);
+			_grappleRope.StartDrawingRope(_grappleDistanceJoint.connectedBody.transform.position);
 		}
 	}
 
@@ -410,8 +412,8 @@ public class CharacterController2D : MonoBehaviour
 		_currentGrappleAnchor = null;
 		_isGrappling = false;
 
-		_grappleSpringJoint.connectedBody = null;
-		_grappleSpringJoint.enabled = false;
+		_grappleDistanceJoint.connectedBody = null;
+		_grappleDistanceJoint.enabled = false;
 		
 		_doubleJumpAvailable = true;
 
