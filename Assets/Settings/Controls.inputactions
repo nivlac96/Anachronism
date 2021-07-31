@@ -51,7 +51,7 @@
                     "name": "",
                     "id": "0387ea6c-e7ea-47e6-a5e2-c845f7c2fbdd",
                     "path": "<Keyboard>/upArrow",
-                    "interactions": "Hold(pressPoint=0.5)",
+                    "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Jump",

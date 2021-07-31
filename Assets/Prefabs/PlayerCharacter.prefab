@@ -9687,10 +9687,11 @@ MonoBehaviour:
   Controller: {fileID: 5577222153686459982}
   Animator: {fileID: 5595557417363646720}
   RunSpeedBase: 30
-  RunSpeedStandard: 40
-  SpeedRampUpPerSec: 7
-  SpeedDecayPerSec: 5
+  RunSpeedStandard: 100
+  SpeedRampUpPerSec: 40
+  SpeedDecayPerSec: 40
   ResetSpeedAfter: 0.2
+  TimeToFullJump: 0.3
 --- !u!114 &5577222153686459982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9703,7 +9704,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 783f8b7882d2d2a42a5b76de9179978f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  JumpForce: 1000
+  MinimumJumpForce: 300
+  AdditionalJumpForcePerSec: 3000
+  DoubleJumpForce: 1000
   MovementSmoothing: 0.05
   AirControl: 1
   WhatIsGround:
@@ -9745,7 +9748,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  CanDoubleJump: 1
+  AllowDoubleJump: 1
   HitPoints: 10
   Invincible: 0
   ParticleJumpUp: {fileID: 5634586889525300700}
@@ -9854,7 +9857,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 5
+  m_GravityScale: 4
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
