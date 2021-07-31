@@ -13,7 +13,6 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private float DoubleJumpForce = 400f;				// Amount of force added per second as the player holds the jump button
 
 	[Range(0, .3f)] [SerializeField] private float MovementSmoothing = .05f;	// How much to smooth out the movement
-	[SerializeField] private bool AirControl = false;							// Whether or not a player can steer while jumping;
 	[SerializeField] private LayerMask WhatIsGround;							// A mask determining what is ground to the character
 	[SerializeField] private Transform GroundCheck;							// A position marking where to check if the player is grounded.
 	[SerializeField] private Transform WallCheck;								//Posicion que controla si el personaje toca una pared
@@ -41,7 +40,29 @@ public class CharacterController2D : MonoBehaviour
 	private Rigidbody2D[] _allAnchorPoints;
 	private Rigidbody2D _currentGrappleAnchor;
 
-	[Header("Events")]
+    [Header("Speed Controls")]
+	[Space]
+
+    [Tooltip("The starting speed when you move from standing still")]
+    public float RunSpeedBase = 30f;
+    [Tooltip("The max speed from running. If you gain extra speed from maneuvers, you will decrease back to this plateau if all you do is run.")]
+    public float RunSpeedStandard = 100f;
+    [Tooltip("How many units the speed increases by per second while running until reaching runSpeedStandard")]
+    public float SpeedRampUpPerSec = 40f;
+    [Tooltip("How many units the speed decreases by per second while running faster than standard")]
+    public float SpeedDecayPerSec = 70f;
+    [Tooltip("How quickly the character can switch directions")]
+    public float TurnAroundSpeedPerSec = 150f;
+    [Tooltip("The amount of control the player has over horizontal movement in mid-air compared to on ground. Lower number means less mid-air control.")] [Range(0,1)]
+    public float MidAirControlMultiplier = 0.5f;
+
+
+    private float _horizontalMove = 0f;
+    private float _horizontalSpeed = 0f;
+    private float _lastDirection = 0f;
+    private float _currentAllowedRunSpeed;
+
+    [Header("Events")]
 	[Space]
 
 	public UnityEvent OnFallEvent;
@@ -93,8 +114,10 @@ public class CharacterController2D : MonoBehaviour
 		_animator = GetComponent<Animator>();
 		_grappleDistanceJoint = GetComponent<DistanceJoint2D>();
 		_grappleRope = GetComponentInChildren<GrappleRope>();
-		
-		var anchorPointObjs = GameObject.FindGameObjectsWithTag("Grappleable");
+
+        _currentAllowedRunSpeed = RunSpeedBase;
+
+        var anchorPointObjs = GameObject.FindGameObjectsWithTag("Grappleable");
 		_allAnchorPoints = new Rigidbody2D[anchorPointObjs.Length];
 		for (int i = 0; i < anchorPointObjs.Length; i++)
         {
@@ -185,7 +208,7 @@ public class CharacterController2D : MonoBehaviour
 	}
 
 
-	public void Move(float move, bool jump, bool dash, bool launchGrapple, bool releaseGrapple)
+	public void Move(float lateralInput, bool jump, bool dash, bool launchGrapple, bool releaseGrapple)
 	{
 		if (_canMove) {
 			if (launchGrapple)
@@ -210,9 +233,10 @@ public class CharacterController2D : MonoBehaviour
 				_rigidbody2DRef.velocity = new Vector2(transform.localScale.x * DashForce, 0);
 			}
 			// Control the player if grounded or airControl is turned on
-			else if (_grounded || AirControl)
+			else
 			{
-                ControlLateralMovement(move);
+                DetermineHorizontalMove(lateralInput);
+                ControlLateralMovement();
 			}
 
             // Jumping /////////////////////////////////////////
@@ -247,7 +271,7 @@ public class CharacterController2D : MonoBehaviour
 
 				if (_isWallSliding)
 				{
-					if (move * transform.localScale.x > 0.1f)
+					if (_horizontalMove * transform.localScale.x > 0.1f)
 					{
 						StartCoroutine(WaitToEndSliding());
 					}
@@ -342,27 +366,82 @@ public class CharacterController2D : MonoBehaviour
 		}
 	}
 
-    private void ControlLateralMovement(float move)
+    /**
+     * Determine the player's horizontal movement based on a number of factors.
+     * 
+     * TODO this funciton is messy as hell and should be streamlined once we have a better idea of what we're doing here
+     * */
+    public void DetermineHorizontalMove(float horizontalInput)
     {
+        // Rigidbody speed from slopes, swings, etc. can boost running speed
+        _currentAllowedRunSpeed = Mathf.Max(_rigidbody2DRef.velocity.magnitude, _currentAllowedRunSpeed);
+
+        // Reduce the player's ability to control their speed if they are mid-air.
+        float airControlScalar = _grounded ? 1 : MidAirControlMultiplier;
+
+        // If player is not giving directional input
+        if (horizontalInput == 0)
+        {
+            
+            if (Mathf.Abs(_horizontalSpeed) > RunSpeedBase)
+            {
+                _currentAllowedRunSpeed = Mathf.Max(RunSpeedBase, _currentAllowedRunSpeed - SpeedDecayPerSec * Time.deltaTime);
+                _horizontalSpeed = _lastDirection * _currentAllowedRunSpeed;
+            }
+            else
+            {
+                _horizontalSpeed = 0;
+            }
+        }
+
+        // If player indicates they want to go in a direction they are not going
+        else if (_horizontalSpeed != 0 && Mathf.Sign(horizontalInput) != Mathf.Sign(_horizontalSpeed))
+        {
+            _horizontalSpeed = _horizontalSpeed + (horizontalInput * TurnAroundSpeedPerSec * airControlScalar * Time.deltaTime);
+        }
+
+        else
+        {
+            // Decay speed if player is going above the standard
+            if (_currentAllowedRunSpeed > RunSpeedStandard)
+            {
+                _currentAllowedRunSpeed = Mathf.Max(RunSpeedStandard, _currentAllowedRunSpeed - SpeedDecayPerSec * Time.deltaTime);
+            }
+            // Ramp up speed if the player is moving slower than standard
+            else if (_currentAllowedRunSpeed < RunSpeedStandard)
+            {
+                _currentAllowedRunSpeed = Mathf.Min(RunSpeedStandard, _currentAllowedRunSpeed + (airControlScalar * SpeedRampUpPerSec * Time.deltaTime));
+            }
+            _horizontalSpeed = horizontalInput * _currentAllowedRunSpeed;
+            _lastDirection = Mathf.Sign(horizontalInput);
+        }
+
+        _horizontalMove = _horizontalSpeed * Time.fixedDeltaTime;
+        _animator.SetFloat("Speed", Mathf.Abs(_horizontalMove));
+
+    }
+
+    private void ControlLateralMovement()
+    {   
         if (_rigidbody2DRef.velocity.y < -_limitFallSpeed)
         {
             _rigidbody2DRef.velocity = new Vector2(_rigidbody2DRef.velocity.x, -_limitFallSpeed);
         }
 
         // Move the character by finding the target velocity
-        Vector3 targetVelocity = new Vector2(move * 10f, _rigidbody2DRef.velocity.y);
+        Vector3 targetVelocity = new Vector2(_horizontalMove * 10f, _rigidbody2DRef.velocity.y);
 
         // And then smoothing it out and applying it to the character
         _rigidbody2DRef.velocity = Vector3.SmoothDamp(_rigidbody2DRef.velocity, targetVelocity, ref _velocity, MovementSmoothing);
 
         // If the input is moving the player right and the player is facing left...
-        if (move > 0 && !_facingRight && !_isWallSliding)
+        if (_horizontalMove > 0 && !_facingRight && !_isWallSliding)
         {
             // ... flip the player.
             Flip();
         }
         // Otherwise if the input is moving the player left and the player is facing right...
-        else if (move < 0 && _facingRight && !_isWallSliding)
+        else if (_horizontalMove < 0 && _facingRight && !_isWallSliding)
         {
             // ... flip the player.
             Flip();
