@@ -1,133 +1,118 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour {
 
-	public CharacterController2D controller;
-	public Animator animator;
-    private Rigidbody2D rigidbody;
+	public CharacterController2D Controller;
+	public Animator Animator;
 
-    [Tooltip("The starting speed when you move from standing still")]
-	public float runSpeedBase = 30f;
-	[Tooltip("The max speed from running. If you gain extra speed from maneuvers, you will decrease back to this plateau if all you do is run.")]
-	public float runSpeedStandard = 40f;
-	[Tooltip("How many units the speed increases by per second while running until reaching runSpeedStandard")]
-	public float speedRampUpPerSec = 7f;
-	[Tooltip("How many units the speed decreases by per second while running faster than standard")]
-	public float speedDecayPerSec = 5f;
-	[Tooltip("How much time in seconds can a player hold still for before their speed resets to Base.")]
-	public float resetSpeedAfter = 0.2f;
-	
-	private float currentRunSpeed;
-	private float speedResetTimer = 0;
+    [Tooltip("The amount of time the jump button must be held before capping out jump height")]
+    public float TimeToFullJump = 0.3f;
 
-	float horizontalMove = 0f;
-	float horizontalRaw = 0f;
-	bool jump = false;
-	bool dash = false;
-	bool launchGrapple = false;
-	bool releaseGrapple = false;
+
+
+
+	private float _horizontalRaw = 0f;
+    private bool _jumpIsHeld = false;
+	private bool _dash = false;
+	private bool _launchGrapple = false;
+	private bool _releaseGrapple = false;
+	private bool _startSlide = false;
+	private bool _endSlide = false;
+    private float _jumpButtonHeldFor = 0;
 
 
     //bool dashAxis = false;
     private void Awake()
     {
-		currentRunSpeed = runSpeedBase;
-        rigidbody = GetComponent<Rigidbody2D>();
+        
 
 		// Most input handlers are triggered by SendMessage, but this was the best way I could find to handle a "button release" event.
 		InputAction grappleInput = GetComponent<PlayerInput>().currentActionMap["Grapple"];
+		InputAction slideInput = GetComponent<PlayerInput>().currentActionMap["Slide"];
+		InputAction jumpInput = GetComponent<PlayerInput>().currentActionMap["Jump"];
+		
 		grappleInput.canceled += OnReleaseGrapple;
+		slideInput.canceled += OnReleaseSlide;
+        jumpInput.canceled += OnReleaseJump;
 
 	}
 
-    // Update is called once per frame
-    void Update () 
+	// Update is called once per frame
+	void Update () 
 	{
-		DetermineCurrentRunSpeed();
+		//DetermineCurrentMoveSpeed();
+        if (_jumpIsHeld)
+        {
+            _jumpButtonHeldFor += Time.deltaTime;
+            if (_jumpButtonHeldFor > TimeToFullJump)
+            {
+                OnReleaseJump(new InputAction.CallbackContext());
+            }
+        }
     }
 
     // These Input handlers are triggered by the SendMessage system of PlayerInput when the player presses a button.
 	public void OnMove(InputValue input)
     {
-		horizontalRaw = input.Get<float>();
+		_horizontalRaw = input.Get<float>();
 	}
 
     public void OnJump()
     {
-		jump = true;
+		_jumpIsHeld = true;
 	}
+
+    public void OnReleaseJump(InputAction.CallbackContext c)
+    {
+        // If the player holds the jump button longer than TimeToFulJump seconds, _jumpIsHeld will be false,
+        // and though this function is called, this if statement will be false.
+        if (_jumpIsHeld is true)
+        {
+            _jumpIsHeld = false;
+            _jumpButtonHeldFor = 0;
+        }
+    }
 
 	public void OnDash()
     {
-		dash = true;
+		_dash = true;
     }
 
 	public void OnGrapple()
     {
-		launchGrapple = true;
+		_launchGrapple = true;
     }
 
 	// This Input handler is not called by the SendMessage system like the others
 	// See how it is initialized in Awake()
 	public void OnReleaseGrapple(InputAction.CallbackContext c)
     {
-		releaseGrapple = true;
+		_releaseGrapple = true;
     }
 
-	public void DetermineCurrentRunSpeed()
-    {
-		// Rigidbody speed from slopes, swings, etc. can boost running speed
-		currentRunSpeed = Mathf.Max(rigidbody.velocity.magnitude, currentRunSpeed);
-		//print(rigidbody.velocity.magnitude);
+	public void OnStartSlide() { }
+	public void OnReleaseSlide(InputAction.CallbackContext c) { }
 
-		// Return to base speed if player holds still for a moment
-		if (horizontalRaw == 0 && currentRunSpeed >= runSpeedBase)
-		{
-			speedResetTimer += Time.deltaTime;
-			if(speedResetTimer > resetSpeedAfter)
-            {
-				currentRunSpeed = runSpeedBase;
-			}
-		}
-		else
-        {
-			speedResetTimer = 0;
-			// Decay speed if player is going above the standard
-			if (currentRunSpeed > runSpeedStandard)
-			{
-				currentRunSpeed = Mathf.Max(runSpeedStandard, currentRunSpeed - speedDecayPerSec * Time.deltaTime);
-			}
-			// Ramp up speed if the player is moving slower than standard
-			else if (currentRunSpeed < runSpeedStandard)
-			{
-				currentRunSpeed = Mathf.Min(runSpeedStandard, currentRunSpeed + speedRampUpPerSec * Time.deltaTime);
-			}
-		}
-		horizontalMove = horizontalRaw * currentRunSpeed;
-		animator.SetFloat("Speed", Mathf.Abs(horizontalMove));
 
-	}
 
 	public void OnFall()
 	{
-        animator.SetBool("IsJumping", true);
+        Animator.SetBool("IsJumping", true);
     }
 
     public void OnLanding()
 	{
-        animator.SetBool("IsJumping", false);
+        Animator.SetBool("IsJumping", false);
     }
 
     void FixedUpdate ()
 	{
 		// Move our character
-		controller.Move(horizontalMove * Time.fixedDeltaTime, jump, dash, launchGrapple, releaseGrapple);
-        jump = false;
-		dash = false;
-		launchGrapple = false;
-		releaseGrapple = false;
+		Controller.Move(_horizontalRaw, _jumpIsHeld, _dash, _launchGrapple, _releaseGrapple);
+		//Controller.Move(_horizontalMove * Time.fixedDeltaTime, _jumpIsHeld, _dash, _launchGrapple, _releaseGrapple);
+		_dash = false;
+		_launchGrapple = false;
+		_releaseGrapple = false;
 	}
 }

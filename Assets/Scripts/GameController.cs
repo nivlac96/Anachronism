@@ -14,13 +14,8 @@ public class GameController : MonoBehaviour
         instance = this;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void OnRestartLevel()
     {
-        // Reset the level when 'R' is pressed
-        if (Input.GetButtonDown("RestartLevel"))
-        {
-            UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
-        }
+        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
     }
 }

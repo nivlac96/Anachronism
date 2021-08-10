@@ -9643,8 +9643,8 @@ GameObject:
   - component: {fileID: 5496594682944004636}
   - component: {fileID: 5479103977661495080}
   - component: {fileID: 5608742553412544356}
-  - component: {fileID: 5544935063680374627}
   - component: {fileID: 565276210}
+  - component: {fileID: 977830561}
   m_Layer: 1
   m_Name: PlayerCharacter
   m_TagString: Player
@@ -9684,13 +9684,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8644d33345e77614ba3ace9c18398d0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 5577222153686459982}
-  animator: {fileID: 5595557417363646720}
-  runSpeedBase: 30
-  runSpeedStandard: 60
-  speedRampUpPerSec: 15
-  speedDecayPerSec: 5
-  resetSpeedAfter: 0.5
+  Controller: {fileID: 5577222153686459982}
+  Animator: {fileID: 5595557417363646720}
+  RunSpeedBase: 30
+  RunSpeedStandard: 100
+  SpeedRampUpPerSec: 40
+  SpeedDecayPerSec: 40
+  TurnAroundSpeedPerSec: 150
+  ResetSpeedAfter: 0.2
+  TimeToFullJump: 0.3
 --- !u!114 &5577222153686459982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9703,25 +9705,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 783f8b7882d2d2a42a5b76de9179978f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_JumpForce: 1100
-  m_MovementSmoothing: 0.05
-  m_AirControl: 1
-  m_WhatIsGround:
+  MinimumJumpForce: 300
+  AdditionalJumpForcePerSec: 3000
+  DoubleJumpForce: 1000
+  MovementSmoothing: 0.05
+  AirControl: 1
+  WhatIsGround:
     serializedVersion: 2
-    m_Bits: 53
-  m_GroundCheck: {fileID: 5547500440380388068}
-  m_WallCheck: {fileID: 5540032294619291992}
-  canDoubleJump: 0
-  m_DashForce: 25
-  life: 10
-  invincible: 1
-  particleJumpUp: {fileID: 5634586889525300700}
-  particleJumpDown: {fileID: 5634370951412449142}
-  minHeightToGrapple: -1
-  maxHeightToGrapple: 10
-  maxXToGrapple: 10
-  releaseGrappleOnLand: 1
-  releaseGrappleOnWall: 1
+    m_Bits: 1
+  GroundCheck: {fileID: 5547500440380388068}
+  WallCheck: {fileID: 5540032294619291992}
+  DashForce: 25
+  MinHeightToGrapple: 0
+  MaxHeightToGrapple: 15
+  MaxXToGrapple: 15
+  GrappleRopeMinLength: 5
+  ReleaseGrappleOnLand: 1
+  ReleaseGrappleOnWall: 1
   OnFallEvent:
     m_PersistentCalls:
       m_Calls:
@@ -9750,6 +9750,11 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  AllowDoubleJump: 1
+  HitPoints: 10
+  Invincible: 0
+  ParticleJumpUp: {fileID: 5634586889525300700}
+  ParticleJumpDown: {fileID: 5634370951412449142}
 --- !u!114 &5576898106099079640
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9757,7 +9762,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5546030763390189164}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d9955788a5eaffa49a9297f38eaa6202, type: 3}
   m_Name: 
@@ -9854,7 +9859,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 5
+  m_GravityScale: 4
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -9972,26 +9977,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!231 &5544935063680374627
-SpringJoint2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5546030763390189164}
-  m_Enabled: 0
-  serializedVersion: 4
-  m_EnableCollision: 0
-  m_ConnectedRigidBody: {fileID: 0}
-  m_BreakForce: Infinity
-  m_BreakTorque: Infinity
-  m_AutoConfigureConnectedAnchor: 0
-  m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0, y: 0}
-  m_AutoConfigureDistance: 0
-  m_Distance: 5
-  m_DampingRatio: 1
-  m_Frequency: 5.38
 --- !u!114 &565276210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10043,6 +10028,25 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!232 &977830561
+DistanceJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5546030763390189164}
+  m_Enabled: 0
+  serializedVersion: 4
+  m_EnableCollision: 0
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_AutoConfigureConnectedAnchor: 0
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0, y: 0}
+  m_AutoConfigureDistance: 1
+  m_Distance: 66.14074
+  m_MaxDistanceOnly: 1
 --- !u!1 &5546074451197265178
 GameObject:
   m_ObjectHideFlags: 0
