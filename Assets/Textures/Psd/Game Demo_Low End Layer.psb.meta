@@ -1,0 +1,756 @@
+fileFormatVersion: 2
+guid: a27f2d73a7e205d499292dc0faed207c
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: b2a9591990af98743ba3ff7cf1000886, type: 3}
+  textureImporterSettings:
+    alphaSource: 1
+    mipMapMode: 0
+    enableMipMap: 1
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+    convertToNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    isReadable: 0
+    streamingMipmaps: 1
+    streamingMipmapsPriority: 0
+    nPOTScale: 1
+    sRGBTexture: 1
+    spriteMode: 2
+    spriteExtrude: 1
+    spriteMeshType: 1
+    alignment: 0
+    spritePivot: {x: 0.5, y: 0.5}
+    spritePixelsToUnits: 100
+    spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+    spriteGenerateFallbackPhysicsShape: 0
+    generateCubemap: 6
+    cubemapConvolution: 0
+    seamlessCubemap: 0
+    alphaIsTransparency: 1
+    spriteTessellationDetail: -1
+    textureType: 8
+    textureShape: 1
+    singleChannelComponent: 0
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
+    normalMap: 0
+    textureFormat: 0
+    maxTextureSize: 0
+    lightmap: 0
+    compressionQuality: 0
+    linearTexture: 0
+    grayScaleToAlpha: 0
+    rGBM: 0
+    cubemapConvolutionSteps: 0
+    cubemapConvolutionExponent: 0
+    maxTextureSizeSet: 0
+    compressionQualitySet: 0
+    textureFormatSet: 0
+    applyGammaDecoding: 0
+  spriteImportData:
+  - name: 
+    originalName: 
+    pivot: {x: 0, y: 0}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    spriteID: 
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 0, y: 0}
+  mosaicSpriteImportData:
+  - name: fore ground
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4812
+      y: 4
+      width: 4561
+      height: 2700
+    spriteID: acd15e83e6babda458a08a59beb96dde
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 4573, y: 4}
+  - name: Wall Tree
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 14112
+      y: 4
+      width: 1219
+      height: 2687
+    spriteID: 86218db96909ac04b838cd28ad62e1e1
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 14112, y: -9}
+  - name: path
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 9099
+      y: 2712
+      width: 4800
+      height: 754
+    spriteID: 899dcee2e1d7f1c419cbc64c25d93587
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 9099, y: 2712}
+  - name: background tree
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4291
+      y: 3676
+      width: 3258
+      height: 1316
+    spriteID: 7d4bd5dd0f76d6c4abe5dfc48ebce055
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 2749, y: 3158}
+  - name: Second ground
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4291
+      y: 2712
+      width: 4800
+      height: 956
+    spriteID: 2f2c2bc9bf614a34ca4b13498626592a
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 4291, y: 2712}
+  - name: glowing mush
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 7557
+      y: 3676
+      width: 1225
+      height: 1221
+    spriteID: d607630dca04d384b8c766c91e8e9e28
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 6739, y: 3106}
+  - name: Paralax layer 4
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 5117
+      width: 4188
+      height: 2435
+    spriteID: 6d1a7d1f8b8c7bc43851bd951c98db52
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -608, y: 4852}
+  - name: Paralax layer 3
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 7560
+      width: 3835
+      height: 2455
+    spriteID: aa43b69d0029e9c4ba55a3bf754d200b
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -423, y: 7315}
+  - name: Paralax layer 2
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 2712
+      width: 4279
+      height: 2397
+    spriteID: 425f1e9c2c7f50d42a0405cde08b8f61
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -517, y: 2409}
+  - name: Paralax layer 1
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 9381
+      y: 4
+      width: 4723
+      height: 2556
+    spriteID: 039f156ca0a3f774bbd0f9b854524cf6
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 9304, y: -140}
+  - name: background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 4
+      width: 4800
+      height: 2700
+    spriteID: bf2efb37185266e448304078973d4966
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 4, y: 4}
+  rigSpriteImportData:
+  - name: fore ground
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4812
+      y: 4
+      width: 4561
+      height: 2700
+    spriteID: 9156366e5d9fb174c9855b55c0b7995c
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 4573, y: 4}
+  - name: Wall Tree
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 14112
+      y: 4
+      width: 1219
+      height: 2687
+    spriteID: c5c9dcb04e5a35741b22c4324295a63b
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 14112, y: -9}
+  - name: path
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 9099
+      y: 2712
+      width: 4800
+      height: 754
+    spriteID: 61cb603525556bc448d8abe01798b5f0
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 9099, y: 2712}
+  - name: background tree
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4291
+      y: 3676
+      width: 3258
+      height: 1316
+    spriteID: 5f08606217efc98428c7a88af74c2006
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 2749, y: 3158}
+  - name: Second ground
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4291
+      y: 2712
+      width: 4800
+      height: 956
+    spriteID: 62236738804039947b83a862f744fcc6
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 4291, y: 2712}
+  - name: glowing mush
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 7557
+      y: 3676
+      width: 1225
+      height: 1221
+    spriteID: db509b75e860ee342a936d45c5592f7e
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 6739, y: 3106}
+  - name: Paralax layer 4
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 5117
+      width: 4188
+      height: 2435
+    spriteID: a073dfb225b35c648b84be340d7cdc3f
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -608, y: 4852}
+  - name: Paralax layer 3
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 7560
+      width: 3835
+      height: 2455
+    spriteID: df4451b9b4595f74798ecb3ada934427
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -423, y: 7315}
+  - name: Paralax layer 2
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 2712
+      width: 4279
+      height: 2397
+    spriteID: dc3578baa90b9324680cb8cbde344a8f
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -517, y: 2409}
+  - name: Paralax layer 1
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 9381
+      y: 4
+      width: 4723
+      height: 2556
+    spriteID: 7bbfcb38c60d4f145a6c4ec79495051e
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 9304, y: -140}
+  - name: background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 4
+      width: 4800
+      height: 2700
+    spriteID: 173aa38ac0eefb24aa713daccb0580a7
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 4, y: 4}
+  platformSettings: []
+  mosaicLayers: 1
+  documentPivot: {x: 0, y: 0}
+  documentAlignment: 7
+  importHiddenLayers: 0
+  importedTextureWidth: 2048
+  importedTextureHeight: 2048
+  documentSize: {x: 4800, y: 2700}
+  paperDollMode: 0
+  keepDupilcateSpriteName: 0
+  spriteCategoryList:
+    categories: []
+  textureActualWidth: 16384
+  textureActualHeight: 16384
+  spritePackingTag: 
+  resliceFromLayer: 0
+  characterMode: 1
+  mosaicPSDLayers:
+  - name: fore ground
+    spriteName: fore ground
+    isGroup: 0
+    parentIndex: -1
+    spriteID: acd15e83e6babda458a08a59beb96dde
+    layerID: 0
+    mosaicPosition: {x: 4812, y: 4}
+  - name: Wall Tree
+    spriteName: Wall Tree
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 86218db96909ac04b838cd28ad62e1e1
+    layerID: 631976646
+    mosaicPosition: {x: 14112, y: 4}
+  - name: path
+    spriteName: path
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 899dcee2e1d7f1c419cbc64c25d93587
+    layerID: -1919693987
+    mosaicPosition: {x: 9099, y: 2712}
+  - name: background tree
+    spriteName: background tree
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 7d4bd5dd0f76d6c4abe5dfc48ebce055
+    layerID: -2108448346
+    mosaicPosition: {x: 4291, y: 3676}
+  - name: Second ground
+    spriteName: Second ground
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 2f2c2bc9bf614a34ca4b13498626592a
+    layerID: -1992527143
+    mosaicPosition: {x: 4291, y: 2712}
+  - name: glowing mush
+    spriteName: glowing mush
+    isGroup: 0
+    parentIndex: -1
+    spriteID: d607630dca04d384b8c766c91e8e9e28
+    layerID: -459466946
+    mosaicPosition: {x: 7557, y: 3676}
+  - name: Paralax layer 4
+    spriteName: Paralax layer 4
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 6d1a7d1f8b8c7bc43851bd951c98db52
+    layerID: 42832160
+    mosaicPosition: {x: 4, y: 5117}
+  - name: Paralax layer 3
+    spriteName: Paralax layer 3
+    isGroup: 0
+    parentIndex: -1
+    spriteID: aa43b69d0029e9c4ba55a3bf754d200b
+    layerID: 42832167
+    mosaicPosition: {x: 4, y: 7560}
+  - name: Paralax layer 2
+    spriteName: Paralax layer 2
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 425f1e9c2c7f50d42a0405cde08b8f61
+    layerID: 42832166
+    mosaicPosition: {x: 4, y: 2712}
+  - name: Paralax layer 1
+    spriteName: Paralax layer 1
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 039f156ca0a3f774bbd0f9b854524cf6
+    layerID: 42832165
+    mosaicPosition: {x: 9381, y: 4}
+  - name: background
+    spriteName: background
+    isGroup: 0
+    parentIndex: -1
+    spriteID: bf2efb37185266e448304078973d4966
+    layerID: 297084606
+    mosaicPosition: {x: 4, y: 4}
+  rigPSDLayers:
+  - name: fore ground
+    spriteName: fore ground
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 9156366e5d9fb174c9855b55c0b7995c
+    layerID: 0
+    mosaicPosition: {x: 4812, y: 4}
+  - name: Wall Tree
+    spriteName: Wall Tree
+    isGroup: 0
+    parentIndex: -1
+    spriteID: c5c9dcb04e5a35741b22c4324295a63b
+    layerID: 631976646
+    mosaicPosition: {x: 14112, y: 4}
+  - name: path
+    spriteName: path
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 61cb603525556bc448d8abe01798b5f0
+    layerID: -1919693987
+    mosaicPosition: {x: 9099, y: 2712}
+  - name: background tree
+    spriteName: background tree
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 5f08606217efc98428c7a88af74c2006
+    layerID: -2108448346
+    mosaicPosition: {x: 4291, y: 3676}
+  - name: Second ground
+    spriteName: Second ground
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 62236738804039947b83a862f744fcc6
+    layerID: -1992527143
+    mosaicPosition: {x: 4291, y: 2712}
+  - name: glowing mush
+    spriteName: glowing mush
+    isGroup: 0
+    parentIndex: -1
+    spriteID: db509b75e860ee342a936d45c5592f7e
+    layerID: -459466946
+    mosaicPosition: {x: 7557, y: 3676}
+  - name: Paralax layer 4
+    spriteName: Paralax layer 4
+    isGroup: 0
+    parentIndex: -1
+    spriteID: a073dfb225b35c648b84be340d7cdc3f
+    layerID: 42832160
+    mosaicPosition: {x: 4, y: 5117}
+  - name: Paralax layer 3
+    spriteName: Paralax layer 3
+    isGroup: 0
+    parentIndex: -1
+    spriteID: df4451b9b4595f74798ecb3ada934427
+    layerID: 42832167
+    mosaicPosition: {x: 4, y: 7560}
+  - name: Paralax layer 2
+    spriteName: Paralax layer 2
+    isGroup: 0
+    parentIndex: -1
+    spriteID: dc3578baa90b9324680cb8cbde344a8f
+    layerID: 42832166
+    mosaicPosition: {x: 4, y: 2712}
+  - name: Paralax layer 1
+    spriteName: Paralax layer 1
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 7bbfcb38c60d4f145a6c4ec79495051e
+    layerID: 42832165
+    mosaicPosition: {x: 9381, y: 4}
+  - name: background
+    spriteName: background
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 173aa38ac0eefb24aa713daccb0580a7
+    layerID: 297084606
+    mosaicPosition: {x: 4, y: 4}
+  characterData:
+    bones: []
+    parts: []
+    dimension: {x: 0, y: 0}
+    characterGroups: []
+  generateGOHierarchy: 1
+  textureAssetName: Game Demo_Low End Layer Texture
+  prefabAssetName: Game Demo_Low End Layer Prefab
+  spriteLibAssetName: Game Demo_Low End Layer Sprite Lib
+  secondarySpriteTextures: []
