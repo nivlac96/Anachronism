@@ -45,7 +45,7 @@ public class CharacterController2D : MonoBehaviour
 
     [Tooltip("The starting speed when you move from standing still")]
     public float RunSpeedBase = 30f;
-    [Tooltip("The max speed from running. If you gain extra speed from maneuvers, you will decrease back to this plateau if all you do is run.")]
+    [Tooltip("The max speed from running. If you gain extra speed from maneuvers, you will decrease back to this plateau if all you do is run.")] 
     public float RunSpeedStandard = 100f;
     [Tooltip("How many units the speed increases by per second while running until reaching runSpeedStandard")]
     public float SpeedRampUpPerSec = 40f;
@@ -377,6 +377,8 @@ public class CharacterController2D : MonoBehaviour
     /// <param name="horizontalInput">The raw input, a float from -1 (left) to 1 (right)</param>
     public void DetermineHorizontalMove(float horizontalInput)
     {
+        // These variables improve readability of calculations so my brains doesn't hurt
+        // 'u' means 'unsigned'
         float uInput = Mathf.Abs(horizontalInput);
         float inputSign = Mathf.Sign(horizontalInput);
         float rigBodSpeed = _rigidbody2DRef.velocity.x;
@@ -384,8 +386,9 @@ public class CharacterController2D : MonoBehaviour
         float rigBodSpeedSign = Mathf.Sign(rigBodSpeed);
 
         // Rigidbody speed from slopes, swings, etc. can boost running speed
-        _horizontalSpeed = Mathf.Max(uRigBodSpeed, _horizontalSpeed);
-        float uHorizontalSpeed = Mathf.Abs(_horizontalSpeed);
+        // That's what this line is supposed to do anyway, but not sure its working yet, so commenting out
+        //_horizontalSpeed = Mathf.Max(uRigBodSpeed, _horizontalSpeed);
+        float uSpeed = Mathf.Abs(_horizontalSpeed);
         float speedSign = Mathf.Sign(_horizontalSpeed);
 
 
@@ -396,10 +399,9 @@ public class CharacterController2D : MonoBehaviour
         if (horizontalInput == 0)
         {
             
-            if (uHorizontalSpeed > RunSpeedBase)
+            if (uSpeed > RunSpeedBase)
             {
-                _currentAllowedRunSpeed = Mathf.Max(RunSpeedBase, _currentAllowedRunSpeed - SpeedDecayPerSec * Time.deltaTime);
-                _horizontalSpeed = _lastDirection * _currentAllowedRunSpeed;
+                _horizontalSpeed = _lastDirection * Mathf.Max(RunSpeedBase, uSpeed - SpeedDecayPerSec * Time.fixedDeltaTime);
             }
             else
             {
@@ -408,28 +410,35 @@ public class CharacterController2D : MonoBehaviour
         }
 
         // horizontal input is nonzero and in the opposite direction the player is already moving
-        else if (_horizontalSpeed != 0 && Mathf.Sign(horizontalInput) != Mathf.Sign(_horizontalSpeed))
+        else if (_horizontalSpeed != 0 && inputSign != speedSign)
         {
-            _horizontalSpeed = _horizontalSpeed + (horizontalInput * TurnAroundSpeedPerSec * airControlScalar * Time.deltaTime);
+            // Turn around speed cannot be lower than speed decay. TODO Perhaps this could be a constraint...
+            TurnAroundSpeedPerSec = Mathf.Max(TurnAroundSpeedPerSec, SpeedDecayPerSec);
+            _horizontalSpeed = _horizontalSpeed + (horizontalInput * TurnAroundSpeedPerSec * airControlScalar * Time.fixedDeltaTime);
         }
 
         // horizontal input is nonzero and in the same direction the player is already moving
         else
         {
+            float newUnsignedSpeed;
             // Decay speed if player is going above the standard
-            if (_currentAllowedRunSpeed > RunSpeedStandard)
+            if (uSpeed > RunSpeedStandard)
             {
-                _currentAllowedRunSpeed = Mathf.Max(RunSpeedStandard, _currentAllowedRunSpeed - SpeedDecayPerSec * Time.deltaTime);
+                newUnsignedSpeed = Mathf.Max(RunSpeedStandard, uSpeed - (SpeedDecayPerSec * uInput * Time.fixedDeltaTime));
             }
             // Ramp up speed if the player is moving slower than standard
-            else if (_currentAllowedRunSpeed < RunSpeedStandard)
+            else if (uSpeed < RunSpeedBase)
             {
-                _currentAllowedRunSpeed = Mathf.Min(RunSpeedStandard, _currentAllowedRunSpeed + (airControlScalar * SpeedRampUpPerSec * Time.deltaTime));
+                newUnsignedSpeed = RunSpeedBase;
             }
-            _horizontalSpeed = horizontalInput * _currentAllowedRunSpeed;
-            _lastDirection = Mathf.Sign(horizontalInput);
+            else
+            {
+                newUnsignedSpeed = Mathf.Min(RunSpeedStandard, uSpeed + (airControlScalar * SpeedRampUpPerSec * uInput * Time.fixedDeltaTime));
+            }
+            _horizontalSpeed = newUnsignedSpeed * inputSign;
         }
 
+        _lastDirection = Mathf.Sign(_horizontalSpeed); // Mathf.Sign returns 1 if input is zero
         _horizontalMove = _horizontalSpeed * Time.fixedDeltaTime;
         _animator.SetFloat("Speed", Mathf.Abs(_horizontalSpeed / 100f));
     }
