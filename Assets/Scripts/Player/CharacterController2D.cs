@@ -45,7 +45,7 @@ public class CharacterController2D : MonoBehaviour
 
     [Tooltip("The starting speed when you move from standing still")]
     public float RunSpeedBase = 30f;
-    [Tooltip("The max speed from running. If you gain extra speed from maneuvers, you will decrease back to this plateau if all you do is run.")]
+    [Tooltip("The max speed from running. If you gain extra speed from maneuvers, you will decrease back to this plateau if all you do is run.")] 
     public float RunSpeedStandard = 100f;
     [Tooltip("How many units the speed increases by per second while running until reaching runSpeedStandard")]
     public float SpeedRampUpPerSec = 40f;
@@ -57,9 +57,13 @@ public class CharacterController2D : MonoBehaviour
     public float MidAirControlMultiplier = 0.5f;
 
 
+    /// <summary> The signed amount the character will move this frame</summary>
     private float _horizontalMove = 0f;
+    /// <summary> The signed units per sec the character is moving.</summary>
     private float _horizontalSpeed = 0f;
+    /// <summary> The sign of the direction in which the player was travelling in the previous frame</summary>
     private float _lastDirection = 0f;
+    /// <summary> I think this var is obsolete</summary>
     private float _currentAllowedRunSpeed;
 
     [Header("Events")]
@@ -180,31 +184,31 @@ public class CharacterController2D : MonoBehaviour
 			_prevVelocityX = _rigidbody2DRef.velocity.x;
 		}
 
-		if (_limitVelOnWallJump)
-		{
-			if (_rigidbody2DRef.velocity.y < -0.5f)
-				_limitVelOnWallJump = false;
-			_jumpWallDistX = (_jumpWallStartX - transform.position.x) * transform.localScale.x;
-			if (_jumpWallDistX < -0.5f && _jumpWallDistX > -1f) 
-			{
-				_canMove = true;
-			}
-			else if (_jumpWallDistX < -1f && _jumpWallDistX >= -2f) 
-			{
-				_canMove = true;
-				_rigidbody2DRef.velocity = new Vector2(10f * transform.localScale.x, _rigidbody2DRef.velocity.y);
-			}
-			else if (_jumpWallDistX < -2f) 
-			{
-				_limitVelOnWallJump = false;
-				_rigidbody2DRef.velocity = new Vector2(0, _rigidbody2DRef.velocity.y);
-			}
-			else if (_jumpWallDistX > 0) 
-			{
-				_limitVelOnWallJump = false;
-				_rigidbody2DRef.velocity = new Vector2(0, _rigidbody2DRef.velocity.y);
-			}
-		}
+        if (_limitVelOnWallJump)
+        {
+            if (_rigidbody2DRef.velocity.y < -0.5f)
+                _limitVelOnWallJump = false;
+            _jumpWallDistX = (_jumpWallStartX - transform.position.x) * transform.localScale.x;
+            if (_jumpWallDistX < -0.5f && _jumpWallDistX > -1f)
+            {
+                _canMove = true;
+            }
+            else if (_jumpWallDistX < -1f && _jumpWallDistX >= -2f)
+            {
+                _canMove = true;
+                _rigidbody2DRef.velocity = new Vector2(10f * transform.localScale.x, _rigidbody2DRef.velocity.y);
+            }
+            else if (_jumpWallDistX < -2f)
+            {
+                _limitVelOnWallJump = false;
+                _rigidbody2DRef.velocity = new Vector2(0, _rigidbody2DRef.velocity.y);
+            }
+            else if (_jumpWallDistX > 0)
+            {
+                _limitVelOnWallJump = false;
+                _rigidbody2DRef.velocity = new Vector2(0, _rigidbody2DRef.velocity.y);
+            }
+        }
 	}
 
 
@@ -366,15 +370,27 @@ public class CharacterController2D : MonoBehaviour
 		}
 	}
 
-    /**
-     * Determine the player's horizontal movement based on a number of factors.
-     * 
-     * TODO this funciton is messy as hell and should be streamlined once we have a better idea of what we're doing here
-     * */
+    /// <summary>
+    /// Determine the player's horizontal movement based on a number of factors.\n
+    /// TODO this funciton is messy as hell and should be streamlined once we have a better idea of what we're doing here
+    /// </summary>
+    /// <param name="horizontalInput">The raw input, a float from -1 (left) to 1 (right)</param>
     public void DetermineHorizontalMove(float horizontalInput)
     {
+        // These variables improve readability of calculations so my brains doesn't hurt
+        // 'u' means 'unsigned'
+        float uInput = Mathf.Abs(horizontalInput);
+        float inputSign = Mathf.Sign(horizontalInput);
+        float rigBodSpeed = _rigidbody2DRef.velocity.x;
+        float uRigBodSpeed = Mathf.Abs(rigBodSpeed);
+        float rigBodSpeedSign = Mathf.Sign(rigBodSpeed);
+
         // Rigidbody speed from slopes, swings, etc. can boost running speed
-        _currentAllowedRunSpeed = Mathf.Max(_rigidbody2DRef.velocity.magnitude, _currentAllowedRunSpeed);
+        // That's what this line is supposed to do anyway, but not sure its working yet, so commenting out
+        //_horizontalSpeed = Mathf.Max(uRigBodSpeed, _horizontalSpeed);
+        float uSpeed = Mathf.Abs(_horizontalSpeed);
+        float speedSign = Mathf.Sign(_horizontalSpeed);
+
 
         // Reduce the player's ability to control their speed if they are mid-air.
         float airControlScalar = _grounded ? 1 : MidAirControlMultiplier;
@@ -383,10 +399,9 @@ public class CharacterController2D : MonoBehaviour
         if (horizontalInput == 0)
         {
             
-            if (Mathf.Abs(_horizontalSpeed) > RunSpeedBase)
+            if (uSpeed > RunSpeedBase)
             {
-                _currentAllowedRunSpeed = Mathf.Max(RunSpeedBase, _currentAllowedRunSpeed - SpeedDecayPerSec * Time.deltaTime);
-                _horizontalSpeed = _lastDirection * _currentAllowedRunSpeed;
+                _horizontalSpeed = _lastDirection * Mathf.Max(RunSpeedBase, uSpeed - SpeedDecayPerSec * Time.fixedDeltaTime);
             }
             else
             {
@@ -394,31 +409,38 @@ public class CharacterController2D : MonoBehaviour
             }
         }
 
-        // If player indicates they want to go in a direction they are not going
-        else if (_horizontalSpeed != 0 && Mathf.Sign(horizontalInput) != Mathf.Sign(_horizontalSpeed))
+        // horizontal input is nonzero and in the opposite direction the player is already moving
+        else if (_horizontalSpeed != 0 && inputSign != speedSign)
         {
-            _horizontalSpeed = _horizontalSpeed + (horizontalInput * TurnAroundSpeedPerSec * airControlScalar * Time.deltaTime);
+            // Turn around speed cannot be lower than speed decay. TODO Perhaps this could be a constraint...
+            TurnAroundSpeedPerSec = Mathf.Max(TurnAroundSpeedPerSec, SpeedDecayPerSec);
+            _horizontalSpeed = _horizontalSpeed + (horizontalInput * TurnAroundSpeedPerSec * airControlScalar * Time.fixedDeltaTime);
         }
 
+        // horizontal input is nonzero and in the same direction the player is already moving
         else
         {
+            float newUnsignedSpeed;
             // Decay speed if player is going above the standard
-            if (_currentAllowedRunSpeed > RunSpeedStandard)
+            if (uSpeed > RunSpeedStandard)
             {
-                _currentAllowedRunSpeed = Mathf.Max(RunSpeedStandard, _currentAllowedRunSpeed - SpeedDecayPerSec * Time.deltaTime);
+                newUnsignedSpeed = Mathf.Max(RunSpeedStandard, uSpeed - (SpeedDecayPerSec * uInput * Time.fixedDeltaTime));
             }
             // Ramp up speed if the player is moving slower than standard
-            else if (_currentAllowedRunSpeed < RunSpeedStandard)
+            else if (uSpeed < RunSpeedBase)
             {
-                _currentAllowedRunSpeed = Mathf.Min(RunSpeedStandard, _currentAllowedRunSpeed + (airControlScalar * SpeedRampUpPerSec * Time.deltaTime));
+                newUnsignedSpeed = RunSpeedBase;
             }
-            _horizontalSpeed = horizontalInput * _currentAllowedRunSpeed;
-            _lastDirection = Mathf.Sign(horizontalInput);
+            else
+            {
+                newUnsignedSpeed = Mathf.Min(RunSpeedStandard, uSpeed + (airControlScalar * SpeedRampUpPerSec * uInput * Time.fixedDeltaTime));
+            }
+            _horizontalSpeed = newUnsignedSpeed * inputSign;
         }
 
+        _lastDirection = Mathf.Sign(_horizontalSpeed); // Mathf.Sign returns 1 if input is zero
         _horizontalMove = _horizontalSpeed * Time.fixedDeltaTime;
-        _animator.SetFloat("Speed", Mathf.Abs(_horizontalMove));
-
+        _animator.SetFloat("Speed", Mathf.Abs(_horizontalSpeed / 100f));
     }
 
     private void ControlLateralMovement()

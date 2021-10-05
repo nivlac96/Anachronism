@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// A class that handles the input for the player. All calculations are handled in CharacterController2D
+/// </summary>
 public class PlayerMovement : MonoBehaviour {
 
 	public CharacterController2D Controller;
@@ -27,7 +30,7 @@ public class PlayerMovement : MonoBehaviour {
     {
         
 
-		// Most input handlers are triggered by SendMessage, but this was the best way I could find to handle a "button release" event.
+		// Most input handlers are triggered by SendMessage through the Input Actions window, but this was the best way I could find to handle a "button release" event.
 		InputAction grappleInput = GetComponent<PlayerInput>().currentActionMap["Grapple"];
 		InputAction slideInput = GetComponent<PlayerInput>().currentActionMap["Slide"];
 		InputAction jumpInput = GetComponent<PlayerInput>().currentActionMap["Jump"];
