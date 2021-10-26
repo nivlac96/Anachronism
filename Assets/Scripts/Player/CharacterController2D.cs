@@ -374,8 +374,20 @@ public class CharacterController2D : MonoBehaviour
         // Draw the grapple rope
         _grappleRope.StartDrawingRope(_grappleDistanceJoint.connectedBody.transform.position);
 
-		}
-	}
+        // Adjust movement direction to start a fluid swing
+        Vector2 playerToAnchor = anchorPoint.transform.position - transform.position;
+        Vector2 left = Vector2.Perpendicular(playerToAnchor);
+        left.Normalize();
+        if (Vector2.SignedAngle(playerToAnchor, _rigidbody2DRef.velocity) > 0)
+        {
+            _rigidbody2DRef.velocity = left * _rigidbody2DRef.velocity.magnitude * -1;
+        }
+        else
+        {
+            _rigidbody2DRef.velocity = left * _rigidbody2DRef.velocity.magnitude;
+        }
+
+    }
 
     /// <summary>
     /// Determine the player's horizontal movement based on a number of factors.\n
