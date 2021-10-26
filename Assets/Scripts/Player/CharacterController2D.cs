@@ -328,10 +328,10 @@ public class CharacterController2D : MonoBehaviour
 
 		// loop through anchor points and see if any satisfy the distance constraints. If any are
 		// found, attach the grapple to the closest one.
-		float closest = Mathf.Infinity;
+		float distanceToClosestAnchor = Mathf.Infinity;
 		float yDiff, distance;
 		Vector2 currAnchorPt;
-		Rigidbody2D closestAnchorPt = null;
+		Rigidbody2D closestAnchor = null;
 		bool anchorPointWasFound = false;
 		for (int i = 0; i < _allAnchorPoints.Length; i++)
         {
@@ -345,10 +345,10 @@ public class CharacterController2D : MonoBehaviour
                 {
 					// check total distance against closest
 					distance = Vector2.Distance(transform.position, currAnchorPt);
-					if (distance < closest)
+					if (distance < distanceToClosestAnchor)
                     {
-						closest = distance;
-						closestAnchorPt = _allAnchorPoints[i];
+						distanceToClosestAnchor = distance;
+						closestAnchor = _allAnchorPoints[i];
 						anchorPointWasFound = true;
                     }
                 }
@@ -357,16 +357,23 @@ public class CharacterController2D : MonoBehaviour
         }
 		if (anchorPointWasFound)
 		{
-			_currentGrappleAnchor = closestAnchorPt;
-			_isGrappling = true;
+            ConnectGrappleToAnchor(closestAnchor, distanceToClosestAnchor);
+		}
+	}
 
-			// Initialize the grapple joint, setting the closest anchor point as its connected body
-			_grappleDistanceJoint.enabled = true;
-			_grappleDistanceJoint.connectedBody = _currentGrappleAnchor;
-			_grappleDistanceJoint.distance = Math.Max(closest, GrappleRopeMinLength);
-			
-			// Draw the grapple rope
-			_grappleRope.StartDrawingRope(_grappleDistanceJoint.connectedBody.transform.position);
+    private void ConnectGrappleToAnchor(Rigidbody2D anchorPoint, float distanceFromPlayer)
+    {
+        _currentGrappleAnchor = anchorPoint;
+        _isGrappling = true;
+
+        // Initialize the grapple joint, setting the anchor point as its connected body
+        _grappleDistanceJoint.enabled = true;
+        _grappleDistanceJoint.connectedBody = _currentGrappleAnchor;
+        _grappleDistanceJoint.distance = Math.Max(distanceFromPlayer, GrappleRopeMinLength);
+
+        // Draw the grapple rope
+        _grappleRope.StartDrawingRope(_grappleDistanceJoint.connectedBody.transform.position);
+
 		}
 	}
 
