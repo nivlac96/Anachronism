@@ -22,25 +22,21 @@ public class CharacterController2D : MonoBehaviour
 	[Space]
 
 	[Tooltip("The minimum Y distance a grapple point must be above for you to attach to it")]
-	[SerializeField] private float MinHeightToGrapple = 5.0f;
+	public float MinHeightToGrapple = 5.0f;
 	[Tooltip("The minimum Y distance a grapple point can be above for you to be able to attach to it ")]
-	[SerializeField] private float MaxHeightToGrapple = 15.0f;
+	public float MaxHeightToGrapple = 15.0f;
 	[Tooltip("The maximum X distance an anchor point can be from you to grapple")]
-	[SerializeField] private float MaxXToGrapple = 5.0f;
+	public float MaxXToGrapple = 5.0f;
     [Tooltip("The shortest the grapple rope can be by default.")]
-    [SerializeField] private float GrappleRopeMinLength = 7.0f;
+    public float GrappleRopeMinLength = 7.0f;
+    [Tooltip("The amount by which horizontal speed is multiplied by when you release")]
+    public float SpeedScalarOnRelease = 2;
     [Tooltip("Should the grapple automatically be released when the player touches ground?")]
-	[SerializeField] private bool ReleaseGrappleOnLand = true;
+	public bool ReleaseGrappleOnLand = true;
 	[Tooltip("Should the grapple automatically be released when the player swings into a wall?")]
-	[SerializeField] private bool ReleaseGrappleOnWall = true;
+	public bool ReleaseGrappleOnWall = true;
 
-	private DistanceJoint2D _grappleDistanceJoint = null;
-	private bool _isGrappling = false;
-	private GrappleRope _grappleRope = null;
-	private Rigidbody2D[] _allAnchorPoints;
-	private Rigidbody2D _currentGrappleAnchor;
-
-    [Header("Speed Controls")]
+        [Header("Speed Controls")]
 	[Space]
 
     [Tooltip("The starting speed when you move from standing still")]
@@ -49,22 +45,15 @@ public class CharacterController2D : MonoBehaviour
     public float RunSpeedStandard = 100f;
     [Tooltip("How many units the speed increases by per second while running until reaching runSpeedStandard")]
     public float SpeedRampUpPerSec = 40f;
-    [Tooltip("How many units the speed decreases by per second while running faster than standard")]
-    public float SpeedDecayPerSec = 70f;
+    [Tooltip("How many units the speed decreases by per second while running faster than standard or not pressing a direction")]
+    public float GroundSpeedDecayPerSec = 70f;
+    [Tooltip("How many units the speed decreases by per second when not pressing a direction mid-air")]
+    public float AirSpeedDecayPerSec = 14f;
     [Tooltip("How quickly the character can switch directions")]
     public float TurnAroundSpeedPerSec = 150f;
     [Tooltip("The amount of control the player has over horizontal movement in mid-air compared to on ground. Lower number means less mid-air control.")] [Range(0,1)]
     public float MidAirControlMultiplier = 0.5f;
 
-
-    /// <summary> The signed amount the character will move this frame</summary>
-    private float _horizontalMove = 0f;
-    /// <summary> The signed units per sec the character is moving.</summary>
-    private float _horizontalSpeed = 0f;
-    /// <summary> The sign of the direction in which the player was travelling in the previous frame</summary>
-    private float _lastDirection = 0f;
-    /// <summary> I think this var is obsolete</summary>
-    private float _currentAllowedRunSpeed;
 
     [Header("Events")]
 	[Space]
@@ -74,6 +63,19 @@ public class CharacterController2D : MonoBehaviour
 
     #endregion
     #region Private Members
+
+    /// <summary> The signed amount the character will move this frame</summary>
+    private float _horizontalMove = 0f;
+    /// <summary> The signed units per sec the character is moving.</summary>
+    private float _horizontalSpeed = 0f;
+    /// <summary> The sign of the direction in which the player was travelling in the previous frame</summary>
+    private float _lastDirection = 0f;
+
+    private DistanceJoint2D _grappleDistanceJoint = null;
+    private bool _isGrappling = false;
+    private GrappleRope _grappleRope = null;
+    private Rigidbody2D[] _allAnchorPoints;
+    private Rigidbody2D _currentGrappleAnchor;
 
     const float GROUNDED_RADIUS = .2f; // Radius of the overlap circle to determine if grounded
     private bool _grounded;            // Whether or not the player is grounded.
@@ -119,7 +121,8 @@ public class CharacterController2D : MonoBehaviour
 		_grappleDistanceJoint = GetComponent<DistanceJoint2D>();
 		_grappleRope = GetComponentInChildren<GrappleRope>();
 
-        _currentAllowedRunSpeed = RunSpeedBase;
+        // Turn around speed cannot be lower than speed decay. TODO Perhaps this could be a constraint...
+        TurnAroundSpeedPerSec = Mathf.Max(TurnAroundSpeedPerSec, GroundSpeedDecayPerSec);
 
         var anchorPointObjs = GameObject.FindGameObjectsWithTag("Grappleable");
 		_allAnchorPoints = new Rigidbody2D[anchorPointObjs.Length];
@@ -357,11 +360,11 @@ public class CharacterController2D : MonoBehaviour
         }
 		if (anchorPointWasFound)
 		{
-            ConnectGrappleToAnchor(closestAnchor, distanceToClosestAnchor);
+            GrappleToAnchorPoint(closestAnchor, distanceToClosestAnchor);
 		}
 	}
 
-    private void ConnectGrappleToAnchor(Rigidbody2D anchorPoint, float distanceFromPlayer)
+    private void GrappleToAnchorPoint(Rigidbody2D anchorPoint, float distanceFromPlayer)
     {
         _currentGrappleAnchor = anchorPoint;
         _isGrappling = true;
@@ -378,7 +381,7 @@ public class CharacterController2D : MonoBehaviour
         Vector2 playerToAnchor = anchorPoint.transform.position - transform.position;
         Vector2 left = Vector2.Perpendicular(playerToAnchor);
         left.Normalize();
-        if (Vector2.SignedAngle(playerToAnchor, _rigidbody2DRef.velocity) > 0)
+        if (Vector2.SignedAngle(playerToAnchor, _rigidbody2DRef.velocity) < 0)
         {
             _rigidbody2DRef.velocity = left * _rigidbody2DRef.velocity.magnitude * -1;
         }
@@ -386,7 +389,6 @@ public class CharacterController2D : MonoBehaviour
         {
             _rigidbody2DRef.velocity = left * _rigidbody2DRef.velocity.magnitude;
         }
-
     }
 
     /// <summary>
@@ -400,39 +402,43 @@ public class CharacterController2D : MonoBehaviour
         // 'u' means 'unsigned'
         float uInput = Mathf.Abs(horizontalInput);
         float inputSign = Mathf.Sign(horizontalInput);
-        float rigBodSpeed = _rigidbody2DRef.velocity.x;
-        float uRigBodSpeed = Mathf.Abs(rigBodSpeed);
-        float rigBodSpeedSign = Mathf.Sign(rigBodSpeed);
-
-        // Rigidbody speed from slopes, swings, etc. can boost running speed
-        // That's what this line is supposed to do anyway, but not sure its working yet, so commenting out
-        //_horizontalSpeed = Mathf.Max(uRigBodSpeed, _horizontalSpeed);
         float uSpeed = Mathf.Abs(_horizontalSpeed);
         float speedSign = Mathf.Sign(_horizontalSpeed);
 
 
         // Reduce the player's ability to control their speed if they are mid-air.
-        float airControlScalar = _grounded ? 1 : MidAirControlMultiplier;
+        float airControlScalar;
+        float speedDecayPerSec;
+        if (_grounded)
+        {
+            airControlScalar = 1;
+            speedDecayPerSec = GroundSpeedDecayPerSec;
+        }
+        else
+        {
+            airControlScalar = MidAirControlMultiplier;
+            speedDecayPerSec = AirSpeedDecayPerSec;
+        }
 
         // If player is not giving directional input
         if (horizontalInput == 0)
         {
-            
-            if (uSpeed > RunSpeedBase)
+            if (_grounded)
             {
-                _horizontalSpeed = _lastDirection * Mathf.Max(RunSpeedBase, uSpeed - SpeedDecayPerSec * Time.fixedDeltaTime);
-            }
-            else
-            {
-                _horizontalSpeed = 0;
+                if (uSpeed > RunSpeedBase)
+                {
+                    _horizontalSpeed = _lastDirection * Mathf.Max(RunSpeedBase, uSpeed - speedDecayPerSec * Time.fixedDeltaTime);
+                }
+                else
+                {
+                    _horizontalSpeed = 0;
+                }
             }
         }
 
         // horizontal input is nonzero and in the opposite direction the player is already moving
         else if (_horizontalSpeed != 0 && inputSign != speedSign)
         {
-            // Turn around speed cannot be lower than speed decay. TODO Perhaps this could be a constraint...
-            TurnAroundSpeedPerSec = Mathf.Max(TurnAroundSpeedPerSec, SpeedDecayPerSec);
             _horizontalSpeed = _horizontalSpeed + (horizontalInput * TurnAroundSpeedPerSec * airControlScalar * Time.fixedDeltaTime);
         }
 
@@ -443,7 +449,7 @@ public class CharacterController2D : MonoBehaviour
             // Decay speed if player is going above the standard
             if (uSpeed > RunSpeedStandard)
             {
-                newUnsignedSpeed = Mathf.Max(RunSpeedStandard, uSpeed - (SpeedDecayPerSec * uInput * Time.fixedDeltaTime));
+                newUnsignedSpeed = Mathf.Max(RunSpeedStandard, uSpeed - (speedDecayPerSec * uInput * Time.fixedDeltaTime));
             }
             // Ramp up speed if the player is moving slower than standard
             else if (uSpeed < RunSpeedBase)
@@ -462,6 +468,7 @@ public class CharacterController2D : MonoBehaviour
         _animator.SetFloat("Speed", Mathf.Abs(_horizontalSpeed / 100f));
     }
 
+    // TODO rename this function to something more accurate
     private void ControlLateralMovement()
     {   
         if (_rigidbody2DRef.velocity.y < -_limitFallSpeed)
@@ -538,7 +545,12 @@ public class CharacterController2D : MonoBehaviour
 		_doubleJumpAvailable = true;
 
 		_grappleRope.HideRope();
-	}
+
+        // Since control of speed will be returned to the function DetermineHorizontalMove, we need to start 
+        // the speed-calcualting system off where the rigidbody physics of the grapple swing left us off
+        _horizontalSpeed = _rigidbody2DRef.velocity.x * SpeedScalarOnRelease;
+
+    }
 
     private void Flip()
 	{
