@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Used in builds/Walk and jump demo.unity
-    guid: a8e12b714cc9e0d4e9fd572d18c20a7d
+    path: Assets/Scenes/Used in builds/New grapple demo v0_4.unity
+    guid: a5cf926dcdf1ad14ab80724f525672f5
   m_configObjects: {}
