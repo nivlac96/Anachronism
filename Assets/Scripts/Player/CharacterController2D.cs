@@ -87,7 +87,9 @@ public class CharacterController2D : MonoBehaviour
 
     public bool AllowDoubleJump = true; // public switch to dis/enable double jumping
     private bool _doubleJumpAvailable = true; // private variable to determine if double jump should be available
-    
+    private bool _fellOffLedge = false;
+
+
     private bool _canDash = true;
     private bool _isDashing = false; //If player is dashing
     private bool _isWallInFrontOfPlayer = false; //If there is a wall in front of the player
@@ -140,7 +142,7 @@ public class CharacterController2D : MonoBehaviour
 
 	private void FixedUpdate()
 	{
-		bool wasGrounded = _grounded;
+		bool wasGroundedLastFrame = _grounded;
 		_grounded = false;
 
 		// The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
@@ -152,7 +154,7 @@ public class CharacterController2D : MonoBehaviour
             {
                 _grounded = true;
             }
-			if (!wasGrounded )
+			if (!wasGroundedLastFrame )
 			{
 				OnLandEvent.Invoke();
 				if (!_isWallInFrontOfPlayer && !_isDashing) 
@@ -165,6 +167,7 @@ public class CharacterController2D : MonoBehaviour
                 _doubleJumpAvailable = true;
                 _firstJumpStarted = false;
                 _firstJumpCompleted = false;
+                _fellOffLedge = false;
             }
 		}
 
@@ -185,6 +188,12 @@ public class CharacterController2D : MonoBehaviour
 				}
 			}
 			_prevVelocityX = _rigidbody2DRef.velocity.x;
+            
+            if (wasGroundedLastFrame && !_firstJumpStarted)
+            {
+                _doubleJumpAvailable = true;
+                _fellOffLedge = true;
+            }
 		}
 
         if (_limitVelOnWallJump)
@@ -257,7 +266,7 @@ public class CharacterController2D : MonoBehaviour
                 StartJumpFromGround();  // Add a vertical force to the player.
             }
 			
-			else if (!_grounded && jump && _firstJumpCompleted && !_isWallSliding)
+			else if (!_grounded && jump && !_isWallSliding && (_firstJumpCompleted || _fellOffLedge))
 			{
                 DoubleJumpIfAllowed();
 			}
@@ -502,6 +511,7 @@ public class CharacterController2D : MonoBehaviour
         _animator.SetBool("JumpUp", true);
         _grounded = false;
         _firstJumpStarted = true;
+        _fellOffLedge = false;
         _rigidbody2DRef.AddForce(new Vector2(0f, MinimumJumpForce));
         _doubleJumpAvailable = true;
         ParticleJumpDown.Play();
