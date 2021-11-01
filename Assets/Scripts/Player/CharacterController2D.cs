@@ -24,10 +24,12 @@ public class CharacterController2D : MonoBehaviour
     public float AdditionalJumpForcePerSec = 400f;
     [Tooltip("Amount of force added per second as the player holds the jump button")]
     public float DoubleJumpForce = 400;
-    [Tooltip("How much the force of a wall jump is increased compared to Minimum Jump Force in the X dimension.")]
+    [Tooltip("X force of a wall jump. Uses different units than Y force")]
     public float WallJumpXSpeed = 100;
-    [Tooltip("How much the force of a wall jump is increased compared to Minimum Jump Force in the X dimension.")]
+    [Tooltip("Y force of a wall jump. Uses different units than X force")]
     public float WallJumpYForce = 2000;
+    [Tooltip("The time in miliseconds after falling off a ledge during which a player can still jump normally")]
+    public int CoyoteTimeAllowance = 200;
 
     [Header("Grapple Controls")]
 	[Space]
@@ -109,6 +111,9 @@ public class CharacterController2D : MonoBehaviour
     private bool _oldWallSlidding = false; //If player is sliding in a wall in the previous frame
     private float _prevVelocityX = 0f;
     private bool _canCheckIfWallSliding = false; //For check if player is wallsliding
+
+    private bool _inCoyoteWindow = false;
+    private float _coyoteTimer = 0;
 
     public float HitPoints = 10f; //Life of the player
     public bool Invincible = false; //If player can die
@@ -211,8 +216,19 @@ public class CharacterController2D : MonoBehaviour
             
             if (wasGroundedLastFrame && !_firstJumpStarted)
             {
-                _doubleJumpAvailable = true;
-                _fellOffLedge = true;
+                _inCoyoteWindow = true;
+                _coyoteTimer = CoyoteTimeAllowance / 1000.0f;
+            }
+
+            if (_inCoyoteWindow)
+            {
+                _coyoteTimer -= Time.deltaTime;
+                if (_coyoteTimer < 0)
+                {
+                    _doubleJumpAvailable = true;
+                    _fellOffLedge = true;
+                    _inCoyoteWindow = false;
+                }
             }
 		}
 
@@ -290,7 +306,7 @@ public class CharacterController2D : MonoBehaviour
                 ContinueJump(jump);
             }
 
-            else if (_grounded && jump)
+            else if ((_grounded || _inCoyoteWindow) && jump)
 			{
                 StartJumpFromGround();  // Add a vertical force to the player.
             }
@@ -311,7 +327,8 @@ public class CharacterController2D : MonoBehaviour
 					StartCoroutine(WaitToCheck(0.1f));
 					_doubleJumpAvailable = true;
 					_animator.SetBool("IsWallSliding", true);
-				}
+                    _inCoyoteWindow = false;
+                }
 				_isDashing = false;
 
 				if (_isWallSliding)
@@ -416,6 +433,7 @@ public class CharacterController2D : MonoBehaviour
     {
         _currentGrappleAnchor = anchorPoint;
         _isGrappling = true;
+        _inCoyoteWindow = false;
 
         // Initialize the grapple joint, setting the anchor point as its connected body
         _grappleDistanceJoint.enabled = true;
@@ -552,10 +570,16 @@ public class CharacterController2D : MonoBehaviour
     {
         _animator.SetBool("IsJumping", true);
         _animator.SetBool("JumpUp", true);
-        _grounded = false;
         _firstJumpStarted = true;
         _fellOffLedge = false;
+
+        // Cancel any vertical momentum and jump
+        if (_rigidbody2DRef.velocity.y < 0)
+        {
+            _rigidbody2DRef.velocity = new Vector2(_rigidbody2DRef.velocity.x, 0);
+        }
         _rigidbody2DRef.AddForce(new Vector2(0f, MinimumJumpForce));
+
         _doubleJumpAvailable = true;
         ParticleJumpDown.Play();
         ParticleJumpUp.Play();
