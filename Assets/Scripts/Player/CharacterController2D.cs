@@ -8,15 +8,26 @@ public class CharacterController2D : MonoBehaviour
 {
     #region Public members
 
-    [SerializeField] private float MinimumJumpForce = 400f;							// Amount of force added when the player jumps.
-    [SerializeField] private float AdditionalJumpForcePerSec = 400f;				// Amount of force added per second as the player holds the jump button
-    [SerializeField] private float DoubleJumpForce = 400f;				// Amount of force added per second as the player holds the jump button
+    [Range(0, .3f)] 
+    public float MovementSmoothing = .05f;	// How much to smooth out the movement
+	public LayerMask WhatIsGround;							// A mask determining what is ground to the character
+	public Transform GroundCheck;							// A position marking where to check if the player is grounded.
+	public Transform WallCheck;								//Posicion que controla si el personaje toca una pared
+    public float DashForce = 25f;
 
-	[Range(0, .3f)] [SerializeField] private float MovementSmoothing = .05f;	// How much to smooth out the movement
-	[SerializeField] private LayerMask WhatIsGround;							// A mask determining what is ground to the character
-	[SerializeField] private Transform GroundCheck;							// A position marking where to check if the player is grounded.
-	[SerializeField] private Transform WallCheck;								//Posicion que controla si el personaje toca una pared
-    [SerializeField] private float DashForce = 25f;
+    [Header("Jump Controls")]
+    [Space]
+
+    [Tooltip("Amount of force added when the player jumps.")]
+    public float MinimumJumpForce = 400f;					
+    [Tooltip("Amount of force added per second as the player holds the jump button")]
+    public float AdditionalJumpForcePerSec = 400f;
+    [Tooltip("Amount of force added per second as the player holds the jump button")]
+    public float DoubleJumpForce = 400;
+    [Tooltip("How much the force of a wall jump is increased compared to Minimum Jump Force in the X dimension.")]
+    public float WallJumpXSpeed = 100;
+    [Tooltip("How much the force of a wall jump is increased compared to Minimum Jump Force in the X dimension.")]
+    public float WallJumpYForce = 2000;
 
     [Header("Grapple Controls")]
 	[Space]
@@ -205,32 +216,33 @@ public class CharacterController2D : MonoBehaviour
             }
 		}
 
-        if (_limitVelOnWallJump)
-        {
-            if (_rigidbody2DRef.velocity.y < -0.5f)
-                _limitVelOnWallJump = false;
-            _jumpWallDistX = (_jumpWallStartX - transform.position.x) * transform.localScale.x;
-            if (_jumpWallDistX < -0.5f && _jumpWallDistX > -1f)
-            {
-                _canMove = true;
-            }
-            else if (_jumpWallDistX < -1f && _jumpWallDistX >= -2f)
-            {
-                _canMove = true;
-                _rigidbody2DRef.velocity = new Vector2(10f * transform.localScale.x, _rigidbody2DRef.velocity.y);
-            }
-            else if (_jumpWallDistX < -2f)
-            {
-                _limitVelOnWallJump = false;
-                _rigidbody2DRef.velocity = new Vector2(0, _rigidbody2DRef.velocity.y);
-            }
-            else if (_jumpWallDistX > 0)
-            {
-                _limitVelOnWallJump = false;
-                _rigidbody2DRef.velocity = new Vector2(0, _rigidbody2DRef.velocity.y);
-            }
-        }
-	}
+        // This snippet limits wall jumps to a quick, specific distance. We'd rath have a bigger more fluid one so removing this for now.
+        //if (_limitVelOnWallJump)
+        //{
+        //    if (_rigidbody2DRef.velocity.y < -0.5f)
+        //        _limitVelOnWallJump = false;
+        //    _jumpWallDistX = (_jumpWallStartX - transform.position.x) * transform.localScale.x;
+        //    if (_jumpWallDistX < -0.5f && _jumpWallDistX > -1f)
+        //    {
+        //        _canMove = true;
+        //    }
+        //    else if (_jumpWallDistX < -1f && _jumpWallDistX >= -2f)
+        //    {
+        //        _canMove = true;
+        //        _rigidbody2DRef.velocity = new Vector2(10f * transform.localScale.x, _rigidbody2DRef.velocity.y);
+        //    }
+        //    else if (_jumpWallDistX < -2f)
+        //    {
+        //        _limitVelOnWallJump = false;
+        //        _rigidbody2DRef.velocity = new Vector2(0, _rigidbody2DRef.velocity.y);
+        //    }
+        //    else if (_jumpWallDistX > 0)
+        //    {
+        //        _limitVelOnWallJump = false;
+        //        _rigidbody2DRef.velocity = new Vector2(0, _rigidbody2DRef.velocity.y);
+        //    }
+        //}
+    }
 
 
 	public void Move(float lateralInput, bool jump, bool dash, bool launchGrapple, bool releaseGrapple)
@@ -267,6 +279,7 @@ public class CharacterController2D : MonoBehaviour
 			// Control the player if grounded or airControl is turned on
 			else
 			{
+                // These two functions comprise the primary movement engine.
                 DetermineHorizontalMove(lateralInput);
                 ControlLateralMovement();
 			}
@@ -318,16 +331,15 @@ public class CharacterController2D : MonoBehaviour
 				{
 					_animator.SetBool("IsJumping", true);
 					_animator.SetBool("JumpUp", true); 
-					_rigidbody2DRef.velocity = new Vector2(0f, 0f);
-					_rigidbody2DRef.AddForce(new Vector2(transform.localScale.x * MinimumJumpForce *1.2f, MinimumJumpForce));
-					_jumpWallStartX = transform.position.x;
-					_limitVelOnWallJump = true;
-					_doubleJumpAvailable = true;
+                    AdjustSpeed(transform.localScale.x * WallJumpXSpeed, WallJumpYForce);
+                    _jumpWallStartX = transform.position.x;
+                    //_limitVelOnWallJump = true;
+                    _doubleJumpAvailable = true;
 					_isWallSliding = false;
 					_animator.SetBool("IsWallSliding", false);
 					_oldWallSlidding = false;
 					WallCheck.localPosition = new Vector3(Mathf.Abs(WallCheck.localPosition.x), WallCheck.localPosition.y, 0);
-					_canMove = false;
+					//_canMove = false;
 				}
 				else if (dash && _canDash)
 				{
@@ -350,6 +362,17 @@ public class CharacterController2D : MonoBehaviour
 		}
 	}
 
+    /// <summary>
+    // Adjusts the speed as is controlled by the primary movement engine. The movement engine is not used while grappling.
+    /// </summary>
+    private void AdjustSpeed(float x, float y)
+    {
+        // x speed is set though this variable which is tightly controlled per frame in DetermineHorizontalMove()
+        _horizontalSpeed += x;
+        
+        // y force can be applied directly to the rigidbody
+        _rigidbody2DRef.AddForce(new Vector2(0, y));
+    }
     private void TryToLaunchGrapple()
     {
 		if (_isGrappling || _grounded) { return; }
@@ -429,7 +452,6 @@ public class CharacterController2D : MonoBehaviour
         float inputSign = Mathf.Sign(horizontalInput);
         float uSpeed = Mathf.Abs(_horizontalSpeed);
         float speedSign = Mathf.Sign(_horizontalSpeed);
-
 
         // Reduce the player's ability to control their speed if they are mid-air.
         float airControlScalar;
