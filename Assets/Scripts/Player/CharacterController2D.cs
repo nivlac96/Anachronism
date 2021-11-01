@@ -92,7 +92,8 @@ public class CharacterController2D : MonoBehaviour
 
     private bool _canDash = true;
     private bool _isDashing = false; //If player is dashing
-    private bool _isWallInFrontOfPlayer = false; //If there is a wall in front of the player
+    private bool _wallCollision = false; //If there is a wall in front of the player
+    private bool _midAirWallCollision = false; //If there is a wall in front of the player while not grounded
     private bool _isWallSliding = false; //If player is sliding in a wall
     private bool _oldWallSlidding = false; //If player is sliding in a wall in the previous frame
     private float _prevVelocityX = 0f;
@@ -157,7 +158,7 @@ public class CharacterController2D : MonoBehaviour
 			if (!wasGroundedLastFrame )
 			{
 				OnLandEvent.Invoke();
-				if (!_isWallInFrontOfPlayer && !_isDashing) 
+				if (!_midAirWallCollision && !_isDashing) 
 					ParticleJumpDown.Play();
                 if (_rigidbody2DRef.velocity.y < 0f)
 					_limitVelOnWallJump = false;
@@ -171,22 +172,30 @@ public class CharacterController2D : MonoBehaviour
             }
 		}
 
-        _isWallInFrontOfPlayer = false;
+        _wallCollision = false;
+        _midAirWallCollision = false;
 
-		if (!_grounded)
+        // check for collisions with walls
+        Collider2D[] collidersWall = Physics2D.OverlapCircleAll(WallCheck.position, GROUNDED_RADIUS, WhatIsGround);
+        for (int i = 0; i < collidersWall.Length; i++)
+        {
+            if (collidersWall[i].gameObject != null)
+            {
+                _isDashing = false;
+                _wallCollision = true;
+                if (ReleaseGrappleOnWall)
+                    TryToReleaseGrapple();
+                KillPlayerMomentum();
+            }
+        }
+
+        if (!_grounded)
 		{
 			OnFallEvent.Invoke();
-			Collider2D[] collidersWall = Physics2D.OverlapCircleAll(WallCheck.position, GROUNDED_RADIUS, WhatIsGround);
-			for (int i = 0; i < collidersWall.Length; i++)
-			{
-				if (collidersWall[i].gameObject != null)
-				{
-					_isDashing = false;
-					_isWallInFrontOfPlayer = true;
-					if (ReleaseGrappleOnWall)
-						TryToReleaseGrapple();
-				}
-			}
+            if (_wallCollision)
+            {
+                _midAirWallCollision = true;
+            }
 			_prevVelocityX = _rigidbody2DRef.velocity.x;
             
             if (wasGroundedLastFrame && !_firstJumpStarted)
@@ -227,6 +236,8 @@ public class CharacterController2D : MonoBehaviour
 	public void Move(float lateralInput, bool jump, bool dash, bool launchGrapple, bool releaseGrapple)
 	{
 		if (_canMove) {
+
+            // Grappling ///////////////////////////////
 			if (launchGrapple)
             {
 				TryToLaunchGrapple();
@@ -237,17 +248,22 @@ public class CharacterController2D : MonoBehaviour
             }
 			if (_isGrappling)
             {
-				return;
+				// during grapple swing, movement is mainly controlled by Rigidbody physics
+                return;
             }
+            ///////////////////////////////////////////
+
+            // Dashing /////////////////////////////////
 			if (dash && _canDash && !_isWallSliding)
 			{
 				StartCoroutine(DashCooldown());
 			}
-			// If crouching, check to see if the character can stand up
 			if (_isDashing)
 			{
 				_rigidbody2DRef.velocity = new Vector2(transform.localScale.x * DashForce, 0);
 			}
+            //////////////////////////////////////////////
+
 			// Control the player if grounded or airControl is turned on
 			else
 			{
@@ -272,7 +288,7 @@ public class CharacterController2D : MonoBehaviour
 			}
             ///////////////////////////////////////////////////
 
-			else if (_isWallInFrontOfPlayer && !_grounded)
+			else if (_midAirWallCollision && !_grounded)
 			{
 				if (!_oldWallSlidding && _rigidbody2DRef.velocity.y < 0 || _isDashing)
 				{
@@ -323,7 +339,7 @@ public class CharacterController2D : MonoBehaviour
 					StartCoroutine(DashCooldown());
 				}
 			}
-			else if (_isWallSliding && !_isWallInFrontOfPlayer && _canCheckIfWallSliding) 
+			else if (_isWallSliding && !_midAirWallCollision && _canCheckIfWallSliding) 
 			{
 				_isWallSliding = false;
 				_animator.SetBool("IsWallSliding", false);
@@ -475,6 +491,11 @@ public class CharacterController2D : MonoBehaviour
         _lastDirection = Mathf.Sign(_horizontalSpeed); // Mathf.Sign returns 1 if input is zero
         _horizontalMove = _horizontalSpeed * Time.fixedDeltaTime;
         _animator.SetFloat("Speed", Mathf.Abs(_horizontalSpeed / 100f));
+    }
+
+    private void KillPlayerMomentum()
+    {
+        _horizontalSpeed = 0;
     }
 
     // TODO rename this function to something more accurate
