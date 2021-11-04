@@ -9686,12 +9686,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Controller: {fileID: 5577222153686459982}
   Animator: {fileID: 5595557417363646720}
-  RunSpeedBase: 30
-  RunSpeedStandard: 100
-  SpeedRampUpPerSec: 40
-  SpeedDecayPerSec: 40
-  TurnAroundSpeedPerSec: 150
-  ResetSpeedAfter: 0.2
   TimeToFullJump: 0.3
 --- !u!114 &5577222153686459982
 MonoBehaviour:
@@ -9705,23 +9699,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 783f8b7882d2d2a42a5b76de9179978f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MinimumJumpForce: 300
-  AdditionalJumpForcePerSec: 3000
-  DoubleJumpForce: 1000
   MovementSmoothing: 0.05
-  AirControl: 1
   WhatIsGround:
     serializedVersion: 2
     m_Bits: 1
   GroundCheck: {fileID: 5547500440380388068}
   WallCheck: {fileID: 5540032294619291992}
   DashForce: 25
+  MinimumJumpForce: 600
+  AdditionalJumpForcePerSec: 3300
+  DoubleJumpForce: 1000
+  WallJumpXSpeed: 90
+  WallJumpYForce: 1800
+  CoyoteTimeAllowance: 300
   MinHeightToGrapple: 0
   MaxHeightToGrapple: 15
   MaxXToGrapple: 15
   GrappleRopeMinLength: 5
+  SpeedScalarOnRelease: 4
   ReleaseGrappleOnLand: 1
   ReleaseGrappleOnWall: 1
+  RunSpeedBase: 30
+  RunSpeedStandard: 100
+  SpeedRampUpPerSec: 40
+  GroundSpeedDecayPerSec: 70
+  AirSpeedDecayPerSec: 14
+  TurnAroundSpeedPerSec: 150
+  MidAirControlMultiplier: 0.5
   OnFallEvent:
     m_PersistentCalls:
       m_Calls:
