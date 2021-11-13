@@ -71,6 +71,17 @@
                 },
                 {
                     "name": "",
+                    "id": "6883e954-c4c6-44ab-a4d1-42b09099cf60",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "f6e3acfd-9991-4793-9c3e-bf8f7351851b",
                     "path": "<Keyboard>/space",
                     "interactions": "",
@@ -180,6 +191,39 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "1D Axis",
+                    "id": "e7eefb10-1ba9-4175-9722-6f026c7ce180",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "8faff70a-582a-4ddc-bbc5-280ede1a85d6",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "feccd000-1a39-4bd1-99ad-e35cea24ccda",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
                     "name": "",
                     "id": "ec9ce250-97ab-4142-a385-5f3a22ff2951",
                     "path": "<Keyboard>/downArrow",
@@ -194,6 +238,17 @@
                     "name": "",
                     "id": "d5232474-00d3-4560-a43b-60c756358d85",
                     "path": "<XInputController>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Slide",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "91157ef8-d4c2-49ca-acbe-53a97bb1eb5c",
+                    "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
