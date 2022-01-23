@@ -261,19 +261,11 @@ public class CharacterController2D : MonoBehaviour
     }
 
 
-	public void Move(float lateralInput, bool jump, bool dash, bool launchGrapple, bool releaseGrapple)
+	public void Move(float lateralInput, bool jump, bool dash)
 	{
 		if (_canMove) {
 
             // Grappling ///////////////////////////////
-			if (launchGrapple)
-            {
-				TryToLaunchGrapple();
-            }
-			if (releaseGrapple)
-            {
-				TryToReleaseGrapple();
-            }
 			if (_isGrappling)
             {
 				// during grapple swing, movement is mainly controlled by Rigidbody physics
@@ -390,7 +382,7 @@ public class CharacterController2D : MonoBehaviour
         // y force can be applied directly to the rigidbody
         _rigidbody2DRef.AddForce(new Vector2(0, y));
     }
-    private void TryToLaunchGrapple()
+    public void TryToGrappleToAnchorPoint()
     {
 		if (_isGrappling || _grounded) { return; }
 
@@ -425,11 +417,15 @@ public class CharacterController2D : MonoBehaviour
         }
 		if (anchorPointWasFound)
 		{
-            GrappleToAnchorPoint(closestAnchor, distanceToClosestAnchor);
+            GrappleToPoint(closestAnchor, distanceToClosestAnchor);
 		}
 	}
 
-    private void GrappleToAnchorPoint(Rigidbody2D anchorPoint, float distanceFromPlayer)
+    public void TryToGrappleToSurface()
+    {
+
+    }
+    private void GrappleToPoint(Rigidbody2D anchorPoint, float distanceFromPlayer)
     {
         _currentGrappleAnchor = anchorPoint;
         _isGrappling = true;
@@ -609,7 +605,7 @@ public class CharacterController2D : MonoBehaviour
         }
     }
 
-    private void TryToReleaseGrapple()
+    public void TryToReleaseGrapple()
     {
 		if (!_isGrappling) { return; }
 

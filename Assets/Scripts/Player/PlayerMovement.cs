@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	public CharacterController2D Controller;
 	public Animator Animator;
+    public Camera MainCam;
 
     [Tooltip("The amount of time the jump button must be held before capping out jump height")]
     public float TimeToFullJump = 0.3f;
@@ -18,7 +19,8 @@ public class PlayerMovement : MonoBehaviour {
 	private float _horizontalRaw = 0f;
     private bool _jumpIsHeld = false;
 	private bool _dash = false;
-	private bool _launchGrapple = false;
+	private bool _launchAnchorGrapple = false;
+	private bool _launchSurfaceGrapple = false;
 	private bool _releaseGrapple = false;
 	private bool _startSlide = false;
 	private bool _endSlide = false;
@@ -84,7 +86,13 @@ public class PlayerMovement : MonoBehaviour {
 
 	public void OnGrapple()
     {
-		_launchGrapple = true;
+		_launchAnchorGrapple = true;
+    }
+
+    public void OnPrimaryFire()
+    {
+        //Vector3 mousePosition = mousePositionReference.action.ReadValue<Vector2>()
+        Controller.TryToGrappleToSurface(MainCam.Sc(new Vector2(Mouse.current.position.x.value, Mouse.current.position.y)));
     }
 
 	// This Input handler is not called by the SendMessage system like the others
@@ -111,11 +119,18 @@ public class PlayerMovement : MonoBehaviour {
 
     void FixedUpdate ()
 	{
-		// Move our character
-		Controller.Move(_horizontalRaw, _jumpIsHeld, _dash, _launchGrapple, _releaseGrapple);
+		if (_launchAnchorGrapple)
+        {
+            Controller.TryToGrappleToAnchorPoint();
+        }
+        else if (_releaseGrapple)
+        {
+            Controller.TryToReleaseGrapple();
+        }
+		Controller.Move(_horizontalRaw, _jumpIsHeld, _dash);
 		//Controller.Move(_horizontalMove * Time.fixedDeltaTime, _jumpIsHeld, _dash, _launchGrapple, _releaseGrapple);
 		_dash = false;
-		_launchGrapple = false;
+		_launchAnchorGrapple = false;
 		_releaseGrapple = false;
 	}
 }
