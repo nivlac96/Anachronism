@@ -22,7 +22,7 @@ public class CharacterController2D : MonoBehaviour
     public float MinimumJumpForce = 400f;					
     [Tooltip("Amount of force added per second as the player holds the jump button")]
     public float AdditionalJumpForcePerSec = 400f;
-    [Tooltip("Amount of force added per second as the player holds the jump button")]
+    [Tooltip("Force added once on double jump. You can double jump after your first jump, or after falling off a ledge after coyote time.")]
     public float DoubleJumpForce = 400;
     [Tooltip("X force of a wall jump. Uses different units than Y force")]
     public float WallJumpXSpeed = 100;

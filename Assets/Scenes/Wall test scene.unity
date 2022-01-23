@@ -624,16 +624,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerCharacter
       objectReference: {fileID: 0}
-    - target: {fileID: 5577222153686459982, guid: 73b981b719a33c64d811d6aca2fa5483,
-        type: 3}
-      propertyPath: WallJumpXForceScalar
-      value: 1000
-      objectReference: {fileID: 0}
-    - target: {fileID: 5622516581890213570, guid: 73b981b719a33c64d811d6aca2fa5483,
-        type: 3}
-      propertyPath: m_SortingOrder
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 73b981b719a33c64d811d6aca2fa5483, type: 3}
 --- !u!1 &1331595909
